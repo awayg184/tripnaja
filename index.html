@@ -121,6 +121,14 @@
     border-radius: 10px;
     pointer-events: none;
   }
+  .passport-art{
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+  .passport > *:not(.passport-art){ position: relative; z-index: 1; }
   .passport .mark{
     font-family: 'Fraunces', serif;
     font-style: italic;
@@ -218,25 +226,36 @@
   .trip-grid{
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 16px;
+    gap: 18px;
   }
   .trip-card{
     background: var(--paper-raised);
     border: 1px solid var(--line-soft);
     border-radius: var(--radius);
-    padding: 18px 18px 16px;
+    padding: 0;
     cursor: pointer;
     position: relative;
-    transition: border-color 0.15s ease, transform 0.15s ease;
+    overflow: hidden;
+    transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
   }
-  .trip-card:hover{ border-color: var(--coral); transform: translateY(-2px); }
+  .trip-card:hover{ border-color: var(--coral-dark); transform: translateY(-3px); box-shadow: 0 10px 22px -14px rgba(54,45,76,0.35); }
+  .trip-card-art{
+    height: 92px;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    padding: 10px 14px;
+    overflow: hidden;
+  }
+  .trip-card-art svg{ position:absolute; right:-6px; bottom:-8px; width:104px; height:104px; opacity:0.9; }
+  .trip-card-body{ padding: 14px 18px 16px; }
   .trip-card .stamp{
     position: absolute;
-    top: 14px; right: 14px;
-    width: 54px; height: 54px;
+    top: 12px; right: 12px;
+    width: 50px; height: 50px;
     border-radius: 50%;
-    border: 1.5px dashed var(--teal-dark);
-    color: var(--teal-dark);
+    border: 1.5px dashed rgba(255,255,255,0.85);
+    color: #fff;
     display: flex; align-items: center; justify-content: center;
     flex-direction: column;
     transform: rotate(-8deg);
@@ -244,17 +263,19 @@
     line-height: 1.05;
     text-align: center;
   }
-  .trip-card .stamp b{ font-size: 15px; }
-  .trip-card .stamp span{ font-size: 8px; letter-spacing: 0.05em; }
+  .trip-card .stamp b{ font-size: 14px; }
+  .trip-card .stamp span{ font-size: 7.5px; letter-spacing: 0.05em; }
   .trip-card .dest{
     font-family: 'IBM Plex Mono', monospace;
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: var(--coral-dark);
-    margin-bottom: 6px;
+    color: #fff;
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.15);
   }
-  .trip-card h3{ font-size: 19px; margin-bottom: 8px; max-width: 70%; }
+  .trip-card h3{ font-size: 19px; margin: 8px 0; max-width: 100%; }
   .trip-card .dates{ font-size: 13px; color: var(--ink-soft); margin-bottom: 10px; }
   .trip-card .owner-tag{
     font-size: 11.5px;
@@ -263,9 +284,10 @@
   }
   .empty-state{
     text-align: center;
-    padding: 60px 20px;
+    padding: 44px 20px 36px;
     color: var(--ink-soft);
   }
+  .empty-state svg{ width: 120px; height: 84px; margin-bottom: 10px; }
   .empty-state h3{ color: var(--ink); margin-bottom: 8px; font-size: 20px; }
   .empty-state p{ margin: 0 0 20px; font-size: 14px; }
   .fab-row{ margin-bottom: 22px; }
@@ -334,6 +356,13 @@
   .visibility-pill.shared{ border-color: var(--teal); color: var(--teal-dark); }
   .visibility-pill.private{ border-color: var(--gold); color: var(--gold); }
 
+  .participant-row{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top: 12px; }
+  .participant-chip{
+    font-size: 12.5px; font-weight: 600; color: var(--plum-dark);
+    background: rgba(132,120,176,0.12); border: 1px solid rgba(132,120,176,0.25);
+    padding: 4px 12px; border-radius: 999px;
+  }
+
   .subtabs{ display:flex; gap: 6px; border-bottom: 1px solid var(--line-soft); margin: 22px 0 20px; }
   .subtab-btn{
     background: none; border: none; padding: 10px 4px;
@@ -351,6 +380,13 @@
   .day-tab.add-day{ border-style: dashed; color: var(--coral-dark); border-color: var(--coral); background: transparent; }
 
   .stop-list{ display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+  .leg-row{
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    padding: 2px 0 2px 60px; margin: -2px 0;
+  }
+  .leg-hint{ font-size: 12px; color: var(--ink-soft); font-style: italic; }
+  .leg-mode{ font-size: 12px; color: var(--teal-dark); font-family: 'IBM Plex Mono', monospace; }
+  .leg-sep{ color: var(--line); }
   .stop-card{
     background: #fff; border: 1px solid var(--line-soft); border-radius: 12px;
     padding: 12px 14px; display: flex; gap: 12px; align-items: flex-start;
@@ -380,10 +416,11 @@
   }
   .sum-badge{
     background: var(--paper-raised); border: 1px solid var(--line-soft);
-    border-radius: 12px; padding: 12px 18px; min-width: 130px;
+    border-left: 4px solid var(--teal-dark); border-radius: 12px 4px 4px 12px; padding: 12px 18px; min-width: 130px;
   }
   .sum-badge .label{ font-size: 11.5px; color: var(--ink-soft); font-family:'IBM Plex Mono',monospace; text-transform:uppercase; letter-spacing:0.05em; }
   .sum-badge .value{ font-family:'Noto Serif Thai',serif; font-weight:700; font-size: 22px; margin-top: 2px; }
+  .sum-badge.total{ border-left-color: var(--coral-dark); }
   .sum-badge.total .value{ color: var(--coral-dark); }
 
   .budget-row{
@@ -406,6 +443,42 @@
   .checklist-row .text{ flex: 1; font-size: 14.5px; }
   .checklist-row.done .text{ text-decoration: line-through; color: var(--ink-soft); }
 
+  .debt-row{
+    display: flex; align-items: center; gap: 12px; padding: 12px 0;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .debt-row.settled{ opacity: 0.55; }
+  .debt-who{ flex: 1; font-size: 14.5px; }
+  .debt-who .note{ font-size: 12.5px; color: var(--ink-soft); margin-top: 2px; }
+  .debt-amt{ font-family:'IBM Plex Mono',monospace; font-weight: 600; font-size: 14.5px; color: var(--coral-dark); }
+  .debt-settle-btn{ font-size: 12.5px; padding: 6px 12px; white-space: nowrap; }
+
+  .badge-grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 14px;
+  }
+  .badge-card{
+    background: var(--paper-raised); border: 1px solid var(--line-soft);
+    border-radius: 12px; overflow: hidden; cursor: pointer;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+  }
+  .badge-card:hover{ transform: translateY(-2px); border-color: var(--coral-dark); }
+  .badge-art{ height: 64px; position: relative; overflow: hidden; }
+  .badge-art svg{ position:absolute; right:-10px; bottom:-10px; width:80px; height:80px; opacity:0.9; }
+  .badge-title{ font-weight: 600; font-size: 13.5px; padding: 10px 12px 2px; }
+  .badge-dest{ font-size: 11.5px; color: var(--ink-soft); padding: 0 12px 12px; }
+
+  .debt-summary-cols{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-top: 12px;
+  }
+  @media (max-width: 560px){
+    .debt-summary-cols{ grid-template-columns: 1fr; }
+  }
+
   .add-inline-row{ display: flex; gap: 10px; margin-top: 14px; }
   .add-inline-row input{ flex: 1; }
 
@@ -421,6 +494,7 @@
 
   <div id="login-view" class="hide">
     <div class="passport">
+      <svg class="passport-art" viewBox="0 0 380 300" aria-hidden="true"><path d="M-10 210 Q90 150 150 190 T310 130 T410 60" stroke="rgba(250,246,255,0.22)" stroke-width="3" stroke-dasharray="2 10" fill="none" stroke-linecap="round"/><circle cx="150" cy="190" r="4" fill="rgba(250,246,255,0.35)"/><circle cx="310" cy="130" r="4" fill="rgba(250,246,255,0.35)"/><path d="M368 44 L392 60 L378 64 L382 78 L370 68 L362 80 L358 62 Z" fill="rgba(250,246,255,0.28)"/></svg>
       <div class="mark">Travel Journal</div>
       <h1>สมุดเดินทาง</h1>
       <p class="sub" id="login-sub">ใส่ไอดีของคุณเพื่อเริ่มวางแผนทริป — ไม่ต้องใช้รหัสผ่าน ข้อมูลซิงก์กับ Google Sheet</p>
@@ -445,6 +519,7 @@
         </div>
       </div>
       <div style="display:flex; gap:8px;">
+        <button class="btn btn-ghost" id="achievement-btn">ความสำเร็จ</button>
         <button class="btn btn-ghost" id="logout-btn">ออกจากระบบ</button>
       </div>
     </header>
@@ -461,6 +536,7 @@
     </div>
 
     <div id="detail-view" class="hide"></div>
+    <div id="achievement-view" class="hide"></div>
   </div>
 </div>
 
@@ -507,6 +583,127 @@
   function money(n){
     n = Number(n) || 0;
     return n.toLocaleString('th-TH', {maximumFractionDigits: 2});
+  }
+
+  /* ---------------- trip card art ---------------- */
+
+  var PALETTES = [
+    { a:'#FFD7A8', b:'#FF9B85' },
+    { a:'#A8E6E0', b:'#5FB9CC' },
+    { a:'#DCC8F5', b:'#B79FE0' },
+    { a:'#C9EAB0', b:'#8FCB7A' },
+    { a:'#F7C6D9', b:'#E594B4' },
+    { a:'#FCE1A8', b:'#F0BE63' }
+  ];
+
+  function hashStr(s){
+    var h = 0;
+    s = String(s || '');
+    for(var i = 0; i < s.length; i++){
+      h = (h * 31 + s.charCodeAt(i)) | 0;
+    }
+    return Math.abs(h);
+  }
+
+  function pickPalette(trip){
+    return PALETTES[hashStr(trip.id) % PALETTES.length];
+  }
+
+  function pickIconName(trip){
+    var text = ((trip.destination || '') + ' ' + (trip.title || '')).toLowerCase();
+    function has(list){
+      return list.some(function(k){ return text.indexOf(k) !== -1; });
+    }
+    if(has(['ทะเล','เกาะ','หาด','ชายหาด','beach','island','sea','samui','phuket','ภูเก็ต','สมุย'])) return 'beach';
+    if(has(['ภูเขา','ดอย','เขา','mountain','peak','เชียงใหม่','chiang mai','เชียงราย','ปาย','pai'])) return 'mountain';
+    if(has(['เมือง','กรุง','city','bangkok','กทม','โตเกียว','tokyo','โซล','seoul','สิงคโปร์','singapore','ลอนดอน','london','ปารีส','paris'])) return 'city';
+    if(has(['ป่า','forest','nature','อุทยาน','national park','safari','เขื่อน','น้ำตก','waterfall'])) return 'forest';
+    return 'compass';
+  }
+
+  var ICONS = {
+    beach: '<svg viewBox="0 0 100 100"><circle cx="70" cy="26" r="13" fill="currentColor" opacity="0.95"/>' +
+      '<path d="M-5 55 Q15 42 35 55 T75 55 T115 55" stroke="currentColor" stroke-width="5" fill="none" opacity="0.85" stroke-linecap="round"/>' +
+      '<path d="M-5 70 Q15 57 35 70 T75 70 T115 70" stroke="currentColor" stroke-width="5" fill="none" opacity="0.55" stroke-linecap="round"/>' +
+      '<path d="M-5 85 Q15 72 35 85 T75 85 T115 85" stroke="currentColor" stroke-width="5" fill="none" opacity="0.3" stroke-linecap="round"/></svg>',
+    mountain: '<svg viewBox="0 0 100 100"><circle cx="76" cy="24" r="10" fill="currentColor" opacity="0.9"/>' +
+      '<path d="M-5 90 L28 32 L46 58 L64 22 L100 90 Z" fill="currentColor" opacity="0.85"/>' +
+      '<path d="M28 32 L36 46 L20 46 Z" fill="currentColor" opacity="0.4"/></svg>',
+    city: '<svg viewBox="0 0 100 100"><rect x="5" y="46" width="14" height="46" fill="currentColor" opacity="0.8"/>' +
+      '<rect x="23" y="30" width="14" height="62" fill="currentColor" opacity="0.9"/>' +
+      '<rect x="41" y="52" width="14" height="40" fill="currentColor" opacity="0.75"/>' +
+      '<rect x="63" y="18" width="16" height="74" fill="currentColor" opacity="0.95"/>' +
+      '<rect x="83" y="40" width="13" height="52" fill="currentColor" opacity="0.8"/></svg>',
+    forest: '<svg viewBox="0 0 100 100"><path d="M22 90 L22 74 L10 74 L24 52 L14 52 L28 30 L42 52 L32 52 L46 74 L34 74 L34 90 Z" fill="currentColor" opacity="0.85"/>' +
+      '<path d="M66 90 L66 78 L56 78 L68 60 L60 60 L72 42 L84 60 L76 60 L88 78 L78 78 L78 90 Z" fill="currentColor" opacity="0.7"/></svg>',
+    compass: '<svg viewBox="0 0 100 100"><circle cx="55" cy="46" r="34" fill="none" stroke="currentColor" stroke-width="4" opacity="0.85"/>' +
+      '<path d="M55 20 L64 46 L55 72 L46 46 Z" fill="currentColor" opacity="0.9"/>' +
+      '<circle cx="55" cy="46" r="4.5" fill="currentColor"/></svg>'
+  };
+
+  function tripArtHtml(trip){
+    var pal = pickPalette(trip);
+    var icon = ICONS[pickIconName(trip)];
+    return '<div class="trip-card-art" style="background: linear-gradient(135deg, ' + pal.a + ', ' + pal.b + '); color: rgba(255,255,255,0.55);">' +
+      icon +
+      '<div class="dest">' + escapeHtml(trip.destination || 'จุดหมายลับ') + '</div>' +
+      '</div>';
+  }
+
+  /* ---------------- Google Maps distance (walking / driving) ---------------- */
+
+  var MAPS_API_KEY = 'AIzaSyCg7f0YiftzfZLXBMXgeFVm0-rBwzHNESE'; /* คีย์ Google Maps — อย่าลืมจำกัดโดเมน/API ใน Cloud Console */
+  var mapsLoadPromise = null;
+  var legCache = {};
+
+  function loadMapsApi(){
+    if(!MAPS_API_KEY) return Promise.reject(new Error('no api key'));
+    if(mapsLoadPromise) return mapsLoadPromise;
+    mapsLoadPromise = new Promise(function(resolve, reject){
+      if(window.google && window.google.maps && window.google.maps.DistanceMatrixService){
+        resolve();
+        return;
+      }
+      var script = document.createElement('script');
+      script.src = 'https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(MAPS_API_KEY) + '&libraries=places&language=th&region=TH';
+      script.onload = function(){ resolve(); };
+      script.onerror = function(){ reject(new Error('maps load failed')); };
+      document.head.appendChild(script);
+    });
+    return mapsLoadPromise;
+  }
+
+  function distanceMatrixOnce(service, origin, destination, mode){
+    return new Promise(function(resolve){
+      service.getDistanceMatrix({
+        origins: [origin],
+        destinations: [destination],
+        travelMode: mode
+      }, function(res, status){
+        if(status === 'OK' && res.rows[0] && res.rows[0].elements[0] && res.rows[0].elements[0].status === 'OK'){
+          resolve(res.rows[0].elements[0]);
+        } else {
+          resolve(null);
+        }
+      });
+    });
+  }
+
+  function getLegDistance(origin, destination){
+    var key = origin + '|' + destination;
+    if(legCache[key]) return Promise.resolve(legCache[key]);
+    if(!MAPS_API_KEY) return Promise.resolve(null);
+    return loadMapsApi().then(function(){
+      var service = new google.maps.DistanceMatrixService();
+      return Promise.all([
+        distanceMatrixOnce(service, origin, destination, google.maps.TravelMode.WALKING),
+        distanceMatrixOnce(service, origin, destination, google.maps.TravelMode.DRIVING)
+      ]).then(function(results){
+        var out = { walk: results[0], drive: results[1] };
+        legCache[key] = out;
+        return out;
+      });
+    }).catch(function(){ return null; });
   }
 
   /* ---------------- storage (Google Sheets via Apps Script) ---------------- */
@@ -635,6 +832,13 @@
     document.getElementById('login-view').classList.remove('hide');
   });
 
+  document.getElementById('achievement-btn').addEventListener('click', function(){
+    document.getElementById('dashboard-view').classList.add('hide');
+    document.getElementById('detail-view').classList.add('hide');
+    document.getElementById('achievement-view').classList.remove('hide');
+    renderAchievements();
+  });
+
   document.getElementById('login-view').classList.remove('hide');
 
   loadRememberedUser().then(function(name){
@@ -670,6 +874,7 @@
 
   function renderDashboard(){
     document.getElementById('detail-view').classList.add('hide');
+    document.getElementById('achievement-view').classList.add('hide');
     document.getElementById('dashboard-view').classList.remove('hide');
     renderTripGrid();
   }
@@ -682,9 +887,15 @@
       var wrap = document.createElement('div');
       wrap.className = 'empty-state';
       wrap.style.gridColumn = '1 / -1';
-      wrap.innerHTML = state.scope === 'shared'
-        ? '<h3>ยังไม่มีทริปรวม</h3><p>สร้างทริปแล้วเลือก "ทริปรวม" ให้ทุกคนเห็นและช่วยกันวางแผนได้</p>'
-        : '<h3>ยังไม่มีทริปส่วนตัว</h3><p>เริ่มสร้างทริปแรกของคุณ — เห็นได้แค่คุณคนเดียว</p>';
+      wrap.innerHTML =
+        '<svg viewBox="0 0 140 100" style="color:var(--coral-dark);"><rect x="34" y="38" width="72" height="50" rx="8" fill="none" stroke="currentColor" stroke-width="4"/>' +
+        '<rect x="56" y="26" width="28" height="14" rx="4" fill="none" stroke="currentColor" stroke-width="4"/>' +
+        '<path d="M34 58 H106" stroke="currentColor" stroke-width="4"/>' +
+        '<path d="M12 30 Q22 20 34 30" stroke="var(--teal-dark)" stroke-width="4" fill="none" stroke-linecap="round"/>' +
+        '<path d="M106 30 Q116 20 128 30" stroke="var(--teal-dark)" stroke-width="4" fill="none" stroke-linecap="round"/></svg>' +
+        (state.scope === 'shared'
+          ? '<h3>ยังไม่มีทริปรวม</h3><p>สร้างทริปแล้วเลือก "ทริปรวม" ให้ทุกคนเห็นและช่วยกันวางแผนได้</p>'
+          : '<h3>ยังไม่มีทริปส่วนตัว</h3><p>เริ่มสร้างทริปแรกของคุณ — เห็นได้แค่คุณคนเดียว</p>');
       grid.appendChild(wrap);
       return;
     }
@@ -692,15 +903,89 @@
       var dc = dayCount(t.startDate, t.endDate);
       var dateStr = t.startDate ? (fmtDate(t.startDate) + (t.endDate && t.endDate !== t.startDate ? ' – ' + fmtDate(t.endDate) : '')) : 'ยังไม่กำหนดวัน';
       return '<div class="trip-card" data-id="' + t.id + '">' +
+        tripArtHtml(t) +
         '<div class="stamp"><b>' + (dc || '?') + '</b><span>' + (dc ? 'วัน' : '') + '</span></div>' +
-        '<div class="dest">' + escapeHtml(t.destination || 'จุดหมายลับ') + '</div>' +
-        '<h3>' + escapeHtml(t.title) + '</h3>' +
-        '<div class="dates">' + dateStr + '</div>' +
-        (state.scope === 'shared' ? '<div class="owner-tag">โดย ' + escapeHtml(t.owner) + '</div>' : '') +
+        '<div class="trip-card-body">' +
+          '<h3>' + escapeHtml(t.title) + '</h3>' +
+          '<div class="dates">' + dateStr + '</div>' +
+          (state.scope === 'shared' ? '<div class="owner-tag">โดย ' + escapeHtml(t.owner) + '</div>' : '') +
+        '</div>' +
         '</div>';
     }).join('');
     grid.querySelectorAll('.trip-card').forEach(function(card){
       card.addEventListener('click', function(){
+        openTripDetail(card.getAttribute('data-id'));
+      });
+    });
+  }
+
+  /* ---------------- achievements ---------------- */
+
+  function renderAchievements(){
+    var wrap = document.getElementById('achievement-view');
+    var mine = state.trips.filter(function(t){
+      return t.owner === state.user || (t.participants || []).indexOf(state.user) !== -1;
+    }).sort(function(a,b){ return (b.createdAt||0) - (a.createdAt||0); });
+
+    var totalDays = mine.reduce(function(sum, t){ return sum + (dayCount(t.startDate, t.endDate) || t.days.length || 0); }, 0);
+    var destinations = [];
+    mine.forEach(function(t){
+      if(t.destination && destinations.indexOf(t.destination) === -1) destinations.push(t.destination);
+    });
+
+    var owedToMeMap = {};
+    var iOweMap = {};
+    state.trips.forEach(function(t){
+      (t.debts || []).forEach(function(d){
+        if(d.settled) return;
+        if(d.lender && d.lender.toLowerCase() === state.user.toLowerCase()){
+          owedToMeMap[d.borrower] = (owedToMeMap[d.borrower] || 0) + Number(d.amount || 0);
+        }
+        if(d.borrower && d.borrower.toLowerCase() === state.user.toLowerCase()){
+          iOweMap[d.lender] = (iOweMap[d.lender] || 0) + Number(d.amount || 0);
+        }
+      });
+    });
+
+    function mapRows(map, verb){
+      var names = Object.keys(map);
+      if(!names.length) return '<p style="color:var(--ink-soft); font-size:14px;">ไม่มีรายการ</p>';
+      return names.map(function(name){
+        return '<div class="debt-row"><div class="debt-who"><b>' + escapeHtml(name) + '</b> ' + verb + '</div>' +
+          '<div class="debt-amt">฿' + money(map[name]) + '</div></div>';
+      }).join('');
+    }
+
+    var badgesHtml = mine.length ? mine.map(function(t){
+      var pal = pickPalette(t);
+      var icon = ICONS[pickIconName(t)];
+      return '<div class="badge-card" data-id="' + t.id + '">' +
+        '<div class="badge-art" style="background: linear-gradient(135deg, ' + pal.a + ', ' + pal.b + '); color: rgba(255,255,255,0.55);">' + icon + '</div>' +
+        '<div class="badge-title">' + escapeHtml(t.title) + '</div>' +
+        '<div class="badge-dest">' + escapeHtml(t.destination || '') + '</div>' +
+      '</div>';
+    }).join('') : '<p style="color:var(--ink-soft); font-size:14px;">ยังไม่เคยร่วมทริปไหนเลย ไปสร้างหรือเข้าร่วมทริปกันก่อน</p>';
+
+    wrap.innerHTML =
+      '<button class="back-link" id="ach-back-btn">&larr; กลับไปหน้ารวมทริป</button>' +
+      '<div class="detail-header"><h1>ความสำเร็จของ ' + escapeHtml(state.user) + '</h1></div>' +
+      '<div class="budget-summary" style="margin-top:18px;">' +
+        '<div class="sum-badge"><div class="label">ทริปที่ไปร่วม</div><div class="value">' + mine.length + '</div></div>' +
+        '<div class="sum-badge"><div class="label">รวมจำนวนวัน</div><div class="value">' + totalDays + '</div></div>' +
+        '<div class="sum-badge total"><div class="label">จุดหมายที่ไปแล้ว</div><div class="value">' + destinations.length + '</div></div>' +
+      '</div>' +
+      '<h3 style="margin: 26px 0 14px; font-size:17px;">ทริปที่เคยร่วม</h3>' +
+      '<div class="badge-grid">' + badgesHtml + '</div>' +
+      '<h3 style="margin: 30px 0 6px; font-size:17px;">สรุปหนี้สินรวมทุกทริป</h3>' +
+      '<div class="debt-summary-cols">' +
+        '<div><p class="eyebrow" style="margin-bottom:8px;">คนที่ค้างเงินคุณ</p>' + mapRows(owedToMeMap, 'ค้างคุณ') + '</div>' +
+        '<div><p class="eyebrow" style="margin-bottom:8px;">คนที่คุณค้างเงิน</p>' + mapRows(iOweMap, 'ที่คุณค้าง') + '</div>' +
+      '</div>';
+
+    document.getElementById('ach-back-btn').addEventListener('click', renderDashboard);
+    wrap.querySelectorAll('.badge-card').forEach(function(card){
+      card.addEventListener('click', function(){
+        document.getElementById('achievement-view').classList.add('hide');
         openTripDetail(card.getAttribute('data-id'));
       });
     });
@@ -779,6 +1064,8 @@
         days: [],
         budget: [],
         checklist: [],
+        participants: [state.user],
+        debts: [],
         createdAt: Date.now()
       };
       state.trips.push(trip);
@@ -813,9 +1100,12 @@
     if(trip.days.length === 0){
       trip.days.push({ id: uid('day'), label: 'วันที่ 1', stops: [] });
     }
+    if(!trip.participants) trip.participants = trip.owner ? [trip.owner] : [];
+    if(!trip.debts) trip.debts = [];
     state.currentDayId = trip.days[0].id;
     state.subtab = 'itinerary';
     document.getElementById('dashboard-view').classList.add('hide');
+    document.getElementById('achievement-view').classList.add('hide');
     document.getElementById('detail-view').classList.remove('hide');
     renderTripDetail();
   }
@@ -831,6 +1121,8 @@
     var canEdit = trip.owner === state.user || trip.visibility === 'shared';
     var wrap = document.getElementById('detail-view');
     var dateStr = trip.startDate ? (fmtDate(trip.startDate) + (trip.endDate && trip.endDate !== trip.startDate ? ' – ' + fmtDate(trip.endDate) : '')) : 'ยังไม่กำหนดวัน';
+    var isParticipant = (trip.participants || []).indexOf(state.user) !== -1;
+    var canJoin = trip.visibility === 'shared' && !isParticipant;
 
     wrap.innerHTML =
       '<button class="back-link" id="back-btn">&larr; กลับไปหน้ารวมทริป</button>' +
@@ -842,11 +1134,16 @@
           '<span class="visibility-pill ' + trip.visibility + '">' + (trip.visibility === 'shared' ? 'ทริปรวม' : 'ทริปส่วนตัว') + '</span>' +
           '<span class="eyebrow">โดย ' + escapeHtml(trip.owner) + '</span>' +
         '</div>' +
+        (trip.visibility === 'shared' ? '<div class="participant-row">' +
+          (trip.participants || []).map(function(p){ return '<span class="participant-chip">' + escapeHtml(p) + '</span>'; }).join('') +
+          (canJoin ? '<button class="btn btn-ghost" id="join-trip-btn" style="padding:6px 14px; font-size:13px;">+ ฉันไปด้วย</button>' : '') +
+        '</div>' : '') +
       '</div>' +
       '<div class="subtabs">' +
         '<button class="subtab-btn" data-sub="itinerary">แผนการเดินทาง</button>' +
         '<button class="subtab-btn" data-sub="budget">งบประมาณ</button>' +
         '<button class="subtab-btn" data-sub="checklist">เช็คลิสต์</button>' +
+        '<button class="subtab-btn" data-sub="debts">หนี้สิน</button>' +
       '</div>' +
       '<div id="subtab-content"></div>' +
       '<div style="margin-top:28px;">' +
@@ -854,6 +1151,13 @@
       '</div>';
 
     document.getElementById('back-btn').addEventListener('click', backToDashboard);
+    var joinBtn = document.getElementById('join-trip-btn');
+    if(joinBtn){
+      joinBtn.addEventListener('click', function(){
+        trip.participants = (trip.participants || []).concat([state.user]);
+        apiUpsertTrip(trip).then(function(){ renderTripDetail(); });
+      });
+    }
     var subBtns = wrap.querySelectorAll('.subtab-btn');
     subBtns.forEach(function(b){
       b.classList.toggle('active', b.getAttribute('data-sub') === state.subtab);
@@ -876,6 +1180,7 @@
 
     if(state.subtab === 'itinerary') renderItinerary(trip);
     else if(state.subtab === 'budget') renderBudget(trip);
+    else if(state.subtab === 'debts') renderDebts(trip);
     else renderChecklist(trip);
   }
 
@@ -892,17 +1197,29 @@
       return '<button class="day-tab' + (d.id === state.currentDayId ? ' active' : '') + '" data-day="' + d.id + '">' + escapeHtml(d.label) + '</button>';
     }).join('') + '<button class="day-tab add-day" id="add-day-btn">+ เพิ่มวัน</button>';
 
-    var stopsHtml = day && day.stops.length ? day.stops.slice().sort(function(a,b){
+    var sortedStops = day && day.stops.length ? day.stops.slice().sort(function(a,b){
       return (a.time||'99:99').localeCompare(b.time||'99:99');
-    }).map(function(s){
-      return '<div class="stop-card">' +
-        '<div class="stop-time">' + escapeHtml(s.time || '--:--') + '</div>' +
-        '<div class="stop-body"><div class="name">' + escapeHtml(s.name) + '</div>' +
-          (s.note ? '<div class="note">' + escapeHtml(s.note) + '</div>' : '') +
-        '</div>' +
-        '<button class="icon-btn" data-del-stop="' + s.id + '" aria-label="ลบ">&times;</button>' +
-      '</div>';
-    }).join('') : '<p style="color:var(--ink-soft); font-size:14px;">ยังไม่มีจุดแวะสำหรับวันนี้</p>';
+    }) : [];
+
+    var stopsHtml = '';
+    if(sortedStops.length){
+      sortedStops.forEach(function(s, idx){
+        if(idx > 0){
+          var prev = sortedStops[idx - 1];
+          stopsHtml += '<div class="leg-row" data-origin="' + escapeHtml(prev.name) + '" data-destination="' + escapeHtml(s.name) + '"></div>';
+        }
+        stopsHtml +=
+          '<div class="stop-card">' +
+            '<div class="stop-time">' + escapeHtml(s.time || '--:--') + '</div>' +
+            '<div class="stop-body"><div class="name">' + escapeHtml(s.name) + '</div>' +
+              (s.note ? '<div class="note">' + escapeHtml(s.note) + '</div>' : '') +
+            '</div>' +
+            '<button class="icon-btn" data-del-stop="' + s.id + '" aria-label="ลบ">&times;</button>' +
+          '</div>';
+      });
+    } else {
+      stopsHtml = '<p style="color:var(--ink-soft); font-size:14px;">ยังไม่มีจุดแวะสำหรับวันนี้</p>';
+    }
 
     content.innerHTML =
       '<div class="day-tabs">' + tabsHtml + '</div>' +
@@ -916,6 +1233,30 @@
         '<div class="field-error" id="stop-err"></div>' +
         '<button class="btn btn-primary" id="add-stop-btn" style="align-self:flex-start;">+ เพิ่มจุดแวะ</button>' +
       '</div>';
+
+    content.querySelectorAll('.leg-row').forEach(function(legEl){
+      var origin = legEl.getAttribute('data-origin');
+      var destination = legEl.getAttribute('data-destination');
+      if(!origin || !destination){
+        legEl.innerHTML = '';
+        return;
+      }
+      if(!MAPS_API_KEY){
+        legEl.innerHTML = '<span class="leg-hint">ใส่ Google Maps API key ในโค้ดเพื่อดูระยะทาง/เวลาเดินทางอัตโนมัติ</span>';
+        return;
+      }
+      legEl.innerHTML = '<span class="leg-hint">กำลังคำนวณระยะทาง...</span>';
+      getLegDistance(origin, destination).then(function(res){
+        if(!res || (!res.walk && !res.drive)){
+          legEl.innerHTML = '<span class="leg-hint">คำนวณระยะทางไม่สำเร็จ ลองตั้งชื่อสถานที่ให้ชัดเจนขึ้น</span>';
+          return;
+        }
+        var parts = [];
+        if(res.walk) parts.push('<span class="leg-mode">เดินเท้า ' + res.walk.duration.text + ' · ' + res.walk.distance.text + '</span>');
+        if(res.drive) parts.push('<span class="leg-mode">ขับรถ ' + res.drive.duration.text + ' · ' + res.drive.distance.text + '</span>');
+        legEl.innerHTML = parts.join('<span class="leg-sep">•</span>');
+      });
+    });
 
     content.querySelectorAll('[data-day]').forEach(function(btn){
       btn.addEventListener('click', function(){
@@ -1069,6 +1410,85 @@
       trip.checklist.push({ id: uid('chk'), text: text, done: false });
       textEl.value = '';
       apiUpsertTrip(trip).then(function(){ renderChecklist(trip); });
+    });
+  }
+
+  /* ----- debts ----- */
+
+  function renderDebts(trip){
+    var content = document.getElementById('subtab-content');
+    var debts = trip.debts || [];
+
+    var owedToMe = debts.filter(function(d){ return !d.settled && d.lender.toLowerCase() === state.user.toLowerCase(); })
+      .reduce(function(sum, d){ return sum + Number(d.amount || 0); }, 0);
+    var iOwe = debts.filter(function(d){ return !d.settled && d.borrower.toLowerCase() === state.user.toLowerCase(); })
+      .reduce(function(sum, d){ return sum + Number(d.amount || 0); }, 0);
+
+    var rowsHtml = debts.length ? debts.slice().sort(function(a,b){ return (a.settled?1:0) - (b.settled?1:0); }).map(function(d){
+      return '<div class="debt-row' + (d.settled ? ' settled' : '') + '">' +
+        '<div class="debt-who"><b>' + escapeHtml(d.borrower) + '</b> ค้าง <b>' + escapeHtml(d.lender) + '</b>' +
+          (d.note ? '<div class="note">' + escapeHtml(d.note) + '</div>' : '') +
+        '</div>' +
+        '<div class="debt-amt">฿' + money(d.amount) + '</div>' +
+        '<button class="btn btn-ghost debt-settle-btn" data-toggle-debt="' + d.id + '">' + (d.settled ? 'จ่ายแล้ว' : 'ยังไม่จ่าย') + '</button>' +
+        '<button class="icon-btn" data-del-debt="' + d.id + '" aria-label="ลบ">&times;</button>' +
+      '</div>';
+    }).join('') : '<p style="color:var(--ink-soft); font-size:14px; margin-top:12px;">ยังไม่มีรายการค้างเงินในทริปนี้</p>';
+
+    content.innerHTML =
+      '<div class="budget-summary">' +
+        '<div class="sum-badge"><div class="label">คนอื่นค้างคุณ</div><div class="value">฿' + money(owedToMe) + '</div></div>' +
+        '<div class="sum-badge total"><div class="label">คุณค้างคนอื่น</div><div class="value">฿' + money(iOwe) + '</div></div>' +
+      '</div>' +
+      '<div>' + rowsHtml + '</div>' +
+      '<div class="inline-add-form" style="margin-top:18px;">' +
+        '<div class="row">' +
+          '<input id="d-borrower" type="text" placeholder="ชื่อคนยืม (ผู้ค้าง)">' +
+          '<input id="d-lender" type="text" placeholder="ชื่อคนให้ยืม" value="' + escapeHtml(state.user) + '">' +
+        '</div>' +
+        '<input id="d-amount" type="number" min="0" step="0.01" placeholder="จำนวนเงิน (บาท)">' +
+        '<input id="d-note" type="text" placeholder="โน้ต เช่น ค่าตั๋วเรือ (ไม่บังคับ)">' +
+        '<div class="field-error" id="d-err"></div>' +
+        '<button class="btn btn-primary" id="add-debt-btn" style="align-self:flex-start;">+ เพิ่มรายการค้างเงิน</button>' +
+      '</div>';
+
+    content.querySelectorAll('[data-toggle-debt]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var did = btn.getAttribute('data-toggle-debt');
+        var d = debts.find(function(x){ return x.id === did; });
+        if(d) d.settled = !d.settled;
+        apiUpsertTrip(trip).then(function(){ renderDebts(trip); });
+      });
+    });
+    content.querySelectorAll('[data-del-debt]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var did = btn.getAttribute('data-del-debt');
+        trip.debts = debts.filter(function(d){ return d.id !== did; });
+        apiUpsertTrip(trip).then(function(){ renderDebts(trip); });
+      });
+    });
+    document.getElementById('add-debt-btn').addEventListener('click', function(){
+      var borrowerEl = document.getElementById('d-borrower');
+      var lenderEl = document.getElementById('d-lender');
+      var amountEl = document.getElementById('d-amount');
+      var errEl = document.getElementById('d-err');
+      var borrower = borrowerEl.value.trim();
+      var lender = lenderEl.value.trim();
+      var amount = amountEl.value;
+      if(!borrower || !lender || !amount || isNaN(Number(amount)) || Number(amount) <= 0){
+        errEl.textContent = 'กรุณาใส่ชื่อคนยืม ชื่อคนให้ยืม และจำนวนเงินให้ถูกต้อง';
+        return;
+      }
+      errEl.textContent = '';
+      trip.debts = debts.concat([{
+        id: uid('debt'),
+        borrower: borrower,
+        lender: lender,
+        amount: Number(amount),
+        note: document.getElementById('d-note').value.trim(),
+        settled: false
+      }]);
+      apiUpsertTrip(trip).then(function(){ renderDebts(trip); });
     });
   }
 
