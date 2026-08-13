@@ -292,6 +292,35 @@
   .empty-state p{ margin: 0 0 20px; font-size: 14px; }
   .fab-row{ margin-bottom: 22px; }
 
+  .dashboard-hero{
+    position: relative;
+    overflow: hidden;
+    border-radius: 20px;
+    background: linear-gradient(135deg, var(--plum), var(--coral-dark));
+    padding: 34px 30px;
+    margin-bottom: 26px;
+    color: #fff;
+  }
+  .hero-art{ position:absolute; inset:0; width:100%; height:100%; }
+  .hero-content{ position:relative; z-index:1; }
+  .hero-content .mark{
+    font-family:'Fraunces', serif; font-style:italic; font-size:13px;
+    letter-spacing:0.08em; color: rgba(255,255,255,0.75); margin-bottom:6px;
+  }
+  .hero-content h1{ font-size:32px; color:#fff; margin-bottom:6px; }
+  .hero-sub{ font-size:14px; color: rgba(255,255,255,0.85); margin:0 0 20px; }
+  .hero-stats{ display:flex; gap:14px; flex-wrap:wrap; }
+  .hero-stat{
+    background: rgba(255,255,255,0.14); border:1px solid rgba(255,255,255,0.26);
+    border-radius:12px; padding:10px 18px; min-width:100px;
+  }
+  .hero-stat .label{ font-size:10.5px; text-transform:uppercase; letter-spacing:0.06em; color: rgba(255,255,255,0.78); font-family:'IBM Plex Mono', monospace; }
+  .hero-stat .value{ font-family:'Noto Serif Thai', serif; font-weight:700; font-size:21px; margin-top:2px; }
+  @media (max-width: 520px){
+    .dashboard-hero{ padding: 26px 20px; }
+    .hero-content h1{ font-size: 26px; }
+  }
+
   /* ---------- modal ---------- */
   .modal-backdrop{
     position: fixed; inset: 0;
@@ -300,6 +329,14 @@
     padding: 20px;
     z-index: 50;
   }
+  .pac-container{
+    font-family: 'Noto Sans Thai', sans-serif;
+    border-radius: 10px;
+    margin-top: 4px;
+    border: 1px solid var(--line);
+    z-index: 9999;
+  }
+  .pac-item{ font-size: 13.5px; padding: 8px 10px; }
   .modal{
     background: var(--paper-raised);
     border-radius: 18px;
@@ -344,6 +381,30 @@
   .detail-header .dest{ font-family:'IBM Plex Mono', monospace; font-size:12px; text-transform:uppercase; letter-spacing:0.08em; color:var(--coral-dark); }
   .detail-header h1{ font-size: 30px; margin: 6px 0 6px; }
   .detail-header .meta-row{ display:flex; gap:14px; flex-wrap:wrap; align-items:center; color: var(--ink-soft); font-size: 13.5px; }
+
+  .detail-hero{
+    position: relative; overflow: hidden; border-radius: 20px;
+    padding: 30px 28px; margin-bottom: 8px;
+  }
+  .detail-hero-art{ position:absolute; right:-24px; bottom:-24px; width:220px; height:220px; }
+  .detail-hero-art svg{ width:100%; height:100%; }
+  .detail-hero-stamp{
+    position:absolute; top:20px; right:22px;
+    width:56px; height:56px; border-radius:50%;
+    border:1.5px dashed rgba(255,255,255,0.7); color:#fff;
+    display:flex; align-items:center; justify-content:center; flex-direction:column;
+    transform: rotate(-8deg); font-family:'IBM Plex Mono', monospace; text-align:center; line-height:1.05;
+  }
+  .detail-hero-stamp b{ font-size:16px; }
+  .detail-hero-stamp span{ font-size:8px; letter-spacing:0.05em; }
+  .detail-hero-content{ position:relative; z-index:1; max-width:78%; }
+  .detail-hero-content .dest{
+    font-family:'IBM Plex Mono', monospace; font-size:12px; text-transform:uppercase;
+    letter-spacing:0.08em; color:rgba(255,255,255,0.85);
+  }
+  .detail-hero-content h1{ font-size:28px; margin:6px 0 8px; color:#fff; }
+  .detail-hero-content .meta-row{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; font-size:13px; color:rgba(255,255,255,0.9); }
+
   .visibility-pill{
     font-family: 'IBM Plex Mono', monospace;
     font-size: 10.5px;
@@ -351,24 +412,25 @@
     letter-spacing: 0.06em;
     padding: 3px 10px;
     border-radius: 999px;
-    border: 1px solid var(--line);
+    border: 1px solid rgba(255,255,255,0.55);
+    color: #fff;
   }
-  .visibility-pill.shared{ border-color: var(--teal); color: var(--teal-dark); }
-  .visibility-pill.private{ border-color: var(--gold); color: var(--gold); }
 
-  .participant-row{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top: 12px; }
+  .participant-row{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top: 14px; }
   .participant-chip{
-    font-size: 12.5px; font-weight: 600; color: var(--plum-dark);
-    background: rgba(132,120,176,0.12); border: 1px solid rgba(132,120,176,0.25);
+    font-size: 12.5px; font-weight: 600; color: #fff;
+    background: rgba(255,255,255,0.16); border: 1px solid rgba(255,255,255,0.32);
     padding: 4px 12px; border-radius: 999px;
   }
 
-  .subtabs{ display:flex; gap: 6px; border-bottom: 1px solid var(--line-soft); margin: 22px 0 20px; }
+  .subtabs{ display:flex; gap: 6px; border-bottom: 1px solid var(--line-soft); margin: 22px 0 20px; flex-wrap: wrap; }
   .subtab-btn{
+    display: inline-flex; align-items: center; gap: 6px;
     background: none; border: none; padding: 10px 4px;
     font-size: 14.5px; font-weight: 600; color: var(--ink-soft);
     border-bottom: 2px solid transparent; margin-right: 18px;
   }
+  .subtab-btn svg{ width: 15px; height: 15px; flex-shrink: 0; }
   .subtab-btn.active{ color: var(--ink); border-bottom-color: var(--coral); }
 
   .day-tabs{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom: 16px; }
@@ -465,6 +527,11 @@
   }
   .badge-card:hover{ transform: translateY(-2px); border-color: var(--coral-dark); }
   .badge-art{ height: 64px; position: relative; overflow: hidden; }
+  .badge-ribbon{
+    position: absolute; left: 12px; top: 0; width: 14px; height: 26px;
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 78%, 0 100%);
+    opacity: 0.85;
+  }
   .badge-art svg{ position:absolute; right:-10px; bottom:-10px; width:80px; height:80px; opacity:0.9; }
   .badge-title{ font-weight: 600; font-size: 13.5px; padding: 10px 12px 2px; }
   .badge-dest{ font-size: 11.5px; color: var(--ink-soft); padding: 0 12px 12px; }
@@ -485,6 +552,11 @@
   @media (max-width: 520px){
     .row2{ grid-template-columns: 1fr; }
     .detail-header h1{ font-size: 24px; }
+    .detail-hero-content{ max-width: 100%; }
+    .detail-hero-content h1{ font-size: 22px; }
+    .detail-hero{ padding: 24px 20px; }
+    .detail-hero-art{ width: 150px; height: 150px; right: -20px; bottom: -20px; opacity: 0.7; }
+    .detail-hero-stamp{ width: 46px; height: 46px; top: 14px; right: 14px; }
   }
 </style>
 </head>
@@ -525,6 +597,23 @@
     </header>
 
     <div id="dashboard-view">
+      <div class="dashboard-hero">
+        <svg class="hero-art" viewBox="0 0 800 220" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M-20 170 Q120 90 220 140 T430 90 T650 130 T860 60" stroke="rgba(255,255,255,0.28)" stroke-width="3" stroke-dasharray="2 12" fill="none" stroke-linecap="round"/>
+          <circle cx="220" cy="140" r="5" fill="rgba(255,255,255,0.42)"/>
+          <circle cx="430" cy="90" r="5" fill="rgba(255,255,255,0.42)"/>
+          <circle cx="650" cy="130" r="5" fill="rgba(255,255,255,0.42)"/>
+          <path d="M778 42 L808 60 L790 65 L794 82 L778 69 L767 84 L762 63 Z" fill="rgba(255,255,255,0.38)"/>
+          <circle cx="70" cy="36" r="44" fill="none" stroke="rgba(255,255,255,0.14)" stroke-width="2"/>
+          <circle cx="726" cy="188" r="58" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2"/>
+        </svg>
+        <div class="hero-content">
+          <div class="mark">Travel Journal</div>
+          <h1>สมุดเดินทาง</h1>
+          <p class="hero-sub" id="hero-sub">วางแผนทริปต่อไปของคุณ</p>
+          <div class="hero-stats" id="hero-stats"></div>
+        </div>
+      </div>
       <div class="tabs">
         <button class="tab-btn active" data-scope="private">ทริปของฉัน</button>
         <button class="tab-btn" data-scope="shared">ทริปรวม</button>
@@ -654,7 +743,13 @@
 
   var MAPS_API_KEY = 'AIzaSyCg7f0YiftzfZLXBMXgeFVm0-rBwzHNESE'; /* คีย์ Google Maps — อย่าลืมจำกัดโดเมน/API ใน Cloud Console */
   var mapsLoadPromise = null;
+  var mapsAuthFailed = false;
   var legCache = {};
+
+  window.gm_authFailure = function(){
+    mapsAuthFailed = true;
+    console.error('Google Maps: การยืนยันตัวตนของ API key ล้มเหลว (gm_authFailure) — มักเกิดจากยังไม่ได้เปิดใช้ API ที่จำเป็น หรือโดเมนที่จำกัดไว้ใน Cloud Console ไม่ตรงกับโดเมนที่เปิดอยู่ตอนนี้ (' + location.origin + ')');
+  };
 
   function loadMapsApi(){
     if(!MAPS_API_KEY) return Promise.reject(new Error('no api key'));
@@ -671,6 +766,25 @@
       document.head.appendChild(script);
     });
     return mapsLoadPromise;
+  }
+
+  function attachPlaceAutocomplete(inputEl){
+    if(!MAPS_API_KEY || !inputEl) return;
+    loadMapsApi().then(function(){
+      if(!window.google || !google.maps.places){
+        console.error('Google Maps: ไลบรารี places ไม่พร้อมใช้งาน ตรวจสอบว่าเปิด "Places API" ใน Cloud Console แล้ว');
+        return;
+      }
+      var ac = new google.maps.places.Autocomplete(inputEl, { fields: ['name', 'formatted_address'] });
+      ac.addListener('place_changed', function(){
+        var place = ac.getPlace();
+        if(place && place.name){
+          inputEl.value = place.name;
+        }
+      });
+    }).catch(function(err){
+      console.error('Google Maps: โหลด Autocomplete ไม่สำเร็จ', err);
+    });
   }
 
   function distanceMatrixOnce(service, origin, destination, mode){
@@ -876,7 +990,28 @@
     document.getElementById('detail-view').classList.add('hide');
     document.getElementById('achievement-view').classList.add('hide');
     document.getElementById('dashboard-view').classList.remove('hide');
+    renderHeroStats();
     renderTripGrid();
+  }
+
+  function renderHeroStats(){
+    var todayStr = new Date().toISOString().slice(0, 10);
+    var mine = state.trips.filter(function(t){
+      return t.owner === state.user || (t.participants || []).indexOf(state.user) !== -1;
+    });
+    var upcoming = mine.filter(function(t){ return t.startDate && t.startDate >= todayStr; });
+    var destinations = [];
+    mine.forEach(function(t){
+      if(t.destination && destinations.indexOf(t.destination) === -1) destinations.push(t.destination);
+    });
+    var subEl = document.getElementById('hero-sub');
+    subEl.textContent = upcoming.length
+      ? 'มีทริปที่กำลังจะมาถึงอีก ' + upcoming.length + ' ทริป — ไปเตรียมตัวกันเถอะ'
+      : 'ยังไม่มีทริปที่กำลังจะมาถึง ลองวางแผนทริปใหม่กันไหม';
+    document.getElementById('hero-stats').innerHTML =
+      '<div class="hero-stat"><div class="label">ทริปทั้งหมด</div><div class="value">' + mine.length + '</div></div>' +
+      '<div class="hero-stat"><div class="label">กำลังจะไป</div><div class="value">' + upcoming.length + '</div></div>' +
+      '<div class="hero-stat"><div class="label">จุดหมายสะสม</div><div class="value">' + destinations.length + '</div></div>';
   }
 
   function renderTripGrid(){
@@ -960,7 +1095,9 @@
       var pal = pickPalette(t);
       var icon = ICONS[pickIconName(t)];
       return '<div class="badge-card" data-id="' + t.id + '">' +
-        '<div class="badge-art" style="background: linear-gradient(135deg, ' + pal.a + ', ' + pal.b + '); color: rgba(255,255,255,0.55);">' + icon + '</div>' +
+        '<div class="badge-art" style="background: linear-gradient(135deg, ' + pal.a + ', ' + pal.b + '); color: rgba(255,255,255,0.55);">' + icon +
+          '<span class="badge-ribbon" style="background:' + pal.b + ';"></span>' +
+        '</div>' +
         '<div class="badge-title">' + escapeHtml(t.title) + '</div>' +
         '<div class="badge-dest">' + escapeHtml(t.destination || '') + '</div>' +
       '</div>';
@@ -968,8 +1105,19 @@
 
     wrap.innerHTML =
       '<button class="back-link" id="ach-back-btn">&larr; กลับไปหน้ารวมทริป</button>' +
-      '<div class="detail-header"><h1>ความสำเร็จของ ' + escapeHtml(state.user) + '</h1></div>' +
-      '<div class="budget-summary" style="margin-top:18px;">' +
+      '<div class="detail-hero" style="background: linear-gradient(135deg, var(--plum), var(--coral-dark));">' +
+        '<div class="detail-hero-art" style="color: rgba(255,255,255,0.4);">' +
+          '<svg viewBox="0 0 100 100"><circle cx="55" cy="42" r="26" fill="none" stroke="currentColor" stroke-width="4"/>' +
+          '<path d="M55 20 L60 36 L77 36 L63 46 L68 62 L55 52 L42 62 L47 46 L33 36 L50 36 Z" fill="currentColor" opacity="0.9"/>' +
+          '<path d="M40 64 L28 92 L44 84 L52 96 L60 74" fill="currentColor" opacity="0.6"/>' +
+          '<path d="M70 64 L82 92 L66 84 L58 96 L50 74" fill="currentColor" opacity="0.45"/></svg>' +
+        '</div>' +
+        '<div class="detail-hero-content" style="max-width:100%;">' +
+          '<div class="dest">Achievements</div>' +
+          '<h1>ความสำเร็จของ ' + escapeHtml(state.user) + '</h1>' +
+        '</div>' +
+      '</div>' +
+      '<div class="budget-summary" style="margin-top:22px;">' +
         '<div class="sum-badge"><div class="label">ทริปที่ไปร่วม</div><div class="value">' + mine.length + '</div></div>' +
         '<div class="sum-badge"><div class="label">รวมจำนวนวัน</div><div class="value">' + totalDays + '</div></div>' +
         '<div class="sum-badge total"><div class="label">จุดหมายที่ไปแล้ว</div><div class="value">' + destinations.length + '</div></div>' +
@@ -1039,6 +1187,8 @@
       visShared.classList.add('selected');
       visPrivate.classList.remove('selected');
     });
+
+    attachPlaceAutocomplete(document.getElementById('m-dest'));
 
     document.getElementById('m-cancel').addEventListener('click', closeModal);
     document.getElementById('modal-backdrop').addEventListener('click', function(e){
@@ -1124,26 +1274,34 @@
     var isParticipant = (trip.participants || []).indexOf(state.user) !== -1;
     var canJoin = trip.visibility === 'shared' && !isParticipant;
 
+    var pal = pickPalette(trip);
+    var icon = ICONS[pickIconName(trip)];
+    var dc = dayCount(trip.startDate, trip.endDate);
+
     wrap.innerHTML =
       '<button class="back-link" id="back-btn">&larr; กลับไปหน้ารวมทริป</button>' +
-      '<div class="detail-header">' +
-        '<div class="dest">' + escapeHtml(trip.destination || 'จุดหมายลับ') + '</div>' +
-        '<h1>' + escapeHtml(trip.title) + '</h1>' +
-        '<div class="meta-row">' +
-          '<span>' + dateStr + '</span>' +
-          '<span class="visibility-pill ' + trip.visibility + '">' + (trip.visibility === 'shared' ? 'ทริปรวม' : 'ทริปส่วนตัว') + '</span>' +
-          '<span class="eyebrow">โดย ' + escapeHtml(trip.owner) + '</span>' +
+      '<div class="detail-hero" style="background: linear-gradient(135deg, ' + pal.a + ', ' + pal.b + ');">' +
+        '<div class="detail-hero-art" style="color: rgba(255,255,255,0.4);">' + icon + '</div>' +
+        (dc ? '<div class="detail-hero-stamp"><b>' + dc + '</b><span>วัน</span></div>' : '') +
+        '<div class="detail-hero-content">' +
+          '<div class="dest">' + escapeHtml(trip.destination || 'จุดหมายลับ') + '</div>' +
+          '<h1>' + escapeHtml(trip.title) + '</h1>' +
+          '<div class="meta-row">' +
+            '<span>' + dateStr + '</span>' +
+            '<span class="visibility-pill ' + trip.visibility + '">' + (trip.visibility === 'shared' ? 'ทริปรวม' : 'ทริปส่วนตัว') + '</span>' +
+            '<span class="eyebrow" style="color:rgba(255,255,255,0.8);">โดย ' + escapeHtml(trip.owner) + '</span>' +
+          '</div>' +
+          (trip.visibility === 'shared' ? '<div class="participant-row">' +
+            (trip.participants || []).map(function(p){ return '<span class="participant-chip">' + escapeHtml(p) + '</span>'; }).join('') +
+            (canJoin ? '<button class="btn" id="join-trip-btn" style="padding:6px 14px; font-size:13px; border-color:rgba(255,255,255,0.5); color:#fff;">+ ฉันไปด้วย</button>' : '') +
+          '</div>' : '') +
         '</div>' +
-        (trip.visibility === 'shared' ? '<div class="participant-row">' +
-          (trip.participants || []).map(function(p){ return '<span class="participant-chip">' + escapeHtml(p) + '</span>'; }).join('') +
-          (canJoin ? '<button class="btn btn-ghost" id="join-trip-btn" style="padding:6px 14px; font-size:13px;">+ ฉันไปด้วย</button>' : '') +
-        '</div>' : '') +
       '</div>' +
       '<div class="subtabs">' +
-        '<button class="subtab-btn" data-sub="itinerary">แผนการเดินทาง</button>' +
-        '<button class="subtab-btn" data-sub="budget">งบประมาณ</button>' +
-        '<button class="subtab-btn" data-sub="checklist">เช็คลิสต์</button>' +
-        '<button class="subtab-btn" data-sub="debts">หนี้สิน</button>' +
+        '<button class="subtab-btn" data-sub="itinerary"><svg viewBox="0 0 20 20"><path d="M3 5h14M3 10h14M3 15h9" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>แผนการเดินทาง</button>' +
+        '<button class="subtab-btn" data-sub="budget"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M10 6v8M7.5 8.5c0-1.4 1.1-2 2.5-2s2.5.7 2.5 1.8c0 2.6-5 1.3-5 3.8 0 1.1 1.1 1.9 2.5 1.9s2.5-.7 2.5-1.9" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linecap="round"/></svg>งบประมาณ</button>' +
+        '<button class="subtab-btn" data-sub="checklist"><svg viewBox="0 0 20 20"><path d="M4 10l4 4 8-9" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>เช็คลิสต์</button>' +
+        '<button class="subtab-btn" data-sub="debts"><svg viewBox="0 0 20 20"><path d="M4 6h12M4 10h12M4 14h8" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/><circle cx="16" cy="15" r="2.6" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>หนี้สิน</button>' +
       '</div>' +
       '<div id="subtab-content"></div>' +
       '<div style="margin-top:28px;">' +
@@ -1248,7 +1406,9 @@
       legEl.innerHTML = '<span class="leg-hint">กำลังคำนวณระยะทาง...</span>';
       getLegDistance(origin, destination).then(function(res){
         if(!res || (!res.walk && !res.drive)){
-          legEl.innerHTML = '<span class="leg-hint">คำนวณระยะทางไม่สำเร็จ ลองตั้งชื่อสถานที่ให้ชัดเจนขึ้น</span>';
+          legEl.innerHTML = mapsAuthFailed
+            ? '<span class="leg-hint">Google Maps API key ยืนยันตัวตนไม่ผ่าน — เช็คว่าเปิด API ครบและโดเมนที่จำกัดไว้ตรงกับที่ใช้งานอยู่ (ดู console เพิ่มเติม)</span>'
+            : '<span class="leg-hint">คำนวณระยะทางไม่สำเร็จ ลองตั้งชื่อสถานที่ให้ชัดเจนขึ้น</span>';
           return;
         }
         var parts = [];
@@ -1257,6 +1417,8 @@
         legEl.innerHTML = parts.join('<span class="leg-sep">•</span>');
       });
     });
+
+    attachPlaceAutocomplete(document.getElementById('stop-name'));
 
     content.querySelectorAll('[data-day]').forEach(function(btn){
       btn.addEventListener('click', function(){
