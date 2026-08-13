@@ -16,17 +16,41 @@
     --line: #E5DBF0;
     --line-soft: #EFE7F7;
     --coral: #F3B9C7;
-    --coral-dark: #B24F70;
+    --coral-dark: #963C58;
     --teal: #AEE1D6;
     --teal-dark: #337367;
-    --plum: #8478B0;
-    --plum-dark: #6A5F94;
+    --plum: #665A94;
+    --plum-dark: #4E4472;
     --gold: #B4863A;
     --danger: #B84F4F;
     --radius: 14px;
     --shadow: 0 1px 0 rgba(54,45,76,0.06);
   }
   *{box-sizing:border-box;}
+  @keyframes fadeSlideUp{
+    from{ opacity: 0; transform: translateY(14px); }
+    to{ opacity: 1; transform: translateY(0); }
+  }
+  @keyframes shimmerGradient{
+    0%{ background-position: 0% 50%; }
+    50%{ background-position: 100% 50%; }
+    100%{ background-position: 0% 50%; }
+  }
+  @keyframes floatDrift{
+    0%, 100%{ transform: translateY(0) rotate(0deg); }
+    50%{ transform: translateY(-8px) rotate(1.5deg); }
+  }
+  @keyframes softPulse{
+    0%, 100%{ opacity: 0.55; }
+    50%{ opacity: 1; }
+  }
+  @keyframes viewFadeIn{
+    from{ opacity: 0; transform: translateY(8px); }
+    to{ opacity: 1; transform: translateY(0); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    *, *::before, *::after{ animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+  }
   html,body{margin:0;padding:0;}
   body{
     background: var(--paper);
@@ -72,16 +96,17 @@
     color: var(--ink);
     font-weight: 600;
     font-size: 14px;
-    transition: transform 0.12s ease, background 0.12s ease;
+    transition: transform 0.2s cubic-bezier(.2,.9,.25,1.4), background 0.15s ease, box-shadow 0.2s ease;
   }
-  .btn:hover{ background: rgba(75,68,96,0.06); }
-  .btn:active{ transform: scale(0.97); }
+  .btn:hover{ background: rgba(75,68,96,0.06); transform: translateY(-2px); }
+  .btn:active{ transform: scale(0.95) translateY(0); }
   .btn-primary{
     background: var(--coral-dark);
     border-color: var(--coral-dark);
     color: #fff;
+    box-shadow: 0 2px 10px -4px rgba(150,57,90,0.5);
   }
-  .btn-primary:hover{ background: #96395A; border-color: #96395A; }
+  .btn-primary:hover{ background: #96395A; border-color: #96395A; box-shadow: 0 8px 18px -6px rgba(150,57,90,0.65); transform: translateY(-2px); }
   .btn-ghost{
     border-color: transparent;
     color: var(--ink-soft);
@@ -94,6 +119,9 @@
 
   #app{ max-width: 860px; margin: 0 auto; padding: 32px 20px 80px; }
   .hide{ display: none !important; }
+  #dashboard-view:not(.hide), #detail-view:not(.hide), #achievement-view:not(.hide){
+    animation: viewFadeIn 0.35s cubic-bezier(.2,.8,.3,1) both;
+  }
 
   /* ---------- login ---------- */
   #login-view{
@@ -105,11 +133,13 @@
   .passport{
     width: 100%;
     max-width: 380px;
-    background: var(--plum);
+    background: linear-gradient(120deg, var(--plum), var(--plum-dark), var(--plum));
+    background-size: 220% 220%;
+    animation: fadeSlideUp 0.5s cubic-bezier(.2,.8,.3,1) both, shimmerGradient 14s ease infinite;
     color: #FAF6FF;
     border-radius: 18px;
     padding: 40px 32px;
-    box-shadow: 0 18px 40px -20px rgba(132,120,176,0.55);
+    box-shadow: 0 18px 40px -20px rgba(78,68,114,0.55);
     position: relative;
     overflow: hidden;
   }
@@ -127,6 +157,7 @@
     width: 100%;
     height: 100%;
     pointer-events: none;
+    animation: floatDrift 9s ease-in-out infinite;
   }
   .passport > *:not(.passport-art){ position: relative; z-index: 1; }
   .passport .mark{
@@ -219,8 +250,10 @@
     font-weight: 600;
     font-size: 14px;
     color: var(--ink-soft);
+    transition: background 0.25s cubic-bezier(.2,.9,.25,1), color 0.25s ease, transform 0.15s ease;
   }
   .tab-btn.active{ background: var(--ink); color: #FAF6FF; }
+  .tab-btn:not(.active):hover{ color: var(--ink); transform: translateY(-1px); }
 
   /* ---------- trip cards ---------- */
   .trip-grid{
@@ -236,9 +269,17 @@
     cursor: pointer;
     position: relative;
     overflow: hidden;
-    transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+    opacity: 0;
+    animation: fadeSlideUp 0.45s cubic-bezier(.2,.8,.3,1) both;
+    animation-delay: var(--stagger, 0ms);
+    transition: border-color 0.2s ease, transform 0.25s cubic-bezier(.2,.9,.25,1.4), box-shadow 0.25s ease;
   }
-  .trip-card:hover{ border-color: var(--coral-dark); transform: translateY(-3px); box-shadow: 0 10px 22px -14px rgba(54,45,76,0.35); }
+  .trip-card:hover{
+    border-color: var(--coral-dark);
+    transform: translateY(-5px) scale(1.015) rotate(-0.4deg);
+    box-shadow: 0 16px 30px -16px rgba(54,45,76,0.42);
+  }
+  .trip-card:active{ transform: translateY(-2px) scale(0.99); }
   .trip-card-art{
     height: 92px;
     position: relative;
@@ -247,7 +288,8 @@
     padding: 10px 14px;
     overflow: hidden;
   }
-  .trip-card-art svg{ position:absolute; right:-6px; bottom:-8px; width:104px; height:104px; opacity:0.9; }
+  .trip-card-art svg{ position:absolute; right:-6px; bottom:-8px; width:104px; height:104px; opacity:0.9; transition: transform 0.35s cubic-bezier(.2,.9,.25,1.2); }
+  .trip-card:hover .trip-card-art svg{ transform: scale(1.12) rotate(4deg); }
   .trip-card-body{ padding: 14px 18px 16px; }
   .trip-card .stamp{
     position: absolute;
@@ -296,12 +338,14 @@
     position: relative;
     overflow: hidden;
     border-radius: 20px;
-    background: linear-gradient(135deg, var(--plum), var(--coral-dark));
+    background: linear-gradient(115deg, var(--plum), var(--coral-dark), var(--plum-dark), var(--coral-dark));
+    background-size: 300% 300%;
+    animation: shimmerGradient 10s ease infinite;
     padding: 34px 30px;
     margin-bottom: 26px;
     color: #fff;
   }
-  .hero-art{ position:absolute; inset:0; width:100%; height:100%; }
+  .hero-art{ position:absolute; inset:0; width:100%; height:100%; animation: floatDrift 7s ease-in-out infinite; }
   .hero-content{ position:relative; z-index:1; }
   .hero-content .mark{
     font-family:'Fraunces', serif; font-style:italic; font-size:13px;
@@ -313,7 +357,9 @@
   .hero-stat{
     background: rgba(255,255,255,0.14); border:1px solid rgba(255,255,255,0.26);
     border-radius:12px; padding:10px 18px; min-width:100px;
+    transition: transform 0.2s cubic-bezier(.2,.9,.3,1.3), background 0.2s ease;
   }
+  .hero-stat:hover{ transform: translateY(-3px) scale(1.04); background: rgba(255,255,255,0.22); }
   .hero-stat .label{ font-size:10.5px; text-transform:uppercase; letter-spacing:0.06em; color: rgba(255,255,255,0.78); font-family:'IBM Plex Mono', monospace; }
   .hero-stat .value{ font-family:'Noto Serif Thai', serif; font-weight:700; font-size:21px; margin-top:2px; }
   @media (max-width: 520px){
@@ -387,8 +433,10 @@
   .detail-hero{
     position: relative; overflow: hidden; border-radius: 20px;
     padding: 30px 28px; margin-bottom: 8px;
+    background-size: 220% 220%;
+    animation: fadeSlideUp 0.5s ease both, shimmerGradient 12s ease infinite;
   }
-  .detail-hero-art{ position:absolute; right:-24px; bottom:-24px; width:220px; height:220px; }
+  .detail-hero-art{ position:absolute; right:-24px; bottom:-24px; width:220px; height:220px; animation: floatDrift 8s ease-in-out infinite; }
   .detail-hero-art svg{ width:100%; height:100%; }
   .detail-hero-stamp{
     position:absolute; top:20px; right:22px;
@@ -396,6 +444,7 @@
     border:1.5px dashed rgba(255,255,255,0.7); color:#fff;
     display:flex; align-items:center; justify-content:center; flex-direction:column;
     transform: rotate(-8deg); font-family:'IBM Plex Mono', monospace; text-align:center; line-height:1.05;
+    animation: floatDrift 5s ease-in-out infinite;
   }
   .detail-hero-stamp b{ font-size:16px; }
   .detail-hero-stamp span{ font-size:8px; letter-spacing:0.05em; }
@@ -431,9 +480,11 @@
     background: none; border: none; padding: 10px 4px;
     font-size: 14.5px; font-weight: 600; color: var(--ink-soft);
     border-bottom: 2px solid transparent; margin-right: 18px;
+    transition: color 0.2s ease, border-color 0.25s cubic-bezier(.2,.9,.25,1);
   }
-  .subtab-btn svg{ width: 15px; height: 15px; flex-shrink: 0; }
-  .subtab-btn.active{ color: var(--ink); border-bottom-color: var(--coral); }
+  .subtab-btn svg{ width: 15px; height: 15px; flex-shrink: 0; transition: transform 0.2s ease; }
+  .subtab-btn:hover svg{ transform: scale(1.15); }
+  .subtab-btn.active{ color: var(--ink); border-bottom-color: var(--coral-dark); }
 
   .day-tabs{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom: 16px; }
   .day-tab{
@@ -449,6 +500,7 @@
     padding: 2px 0 2px 60px; margin: -2px 0;
   }
   .leg-hint{ font-size: 12px; color: var(--ink-soft); font-style: italic; }
+  .leg-hint.loading{ animation: softPulse 1.3s ease-in-out infinite; }
   .leg-mode{ font-size: 12px; color: var(--teal-dark); font-family: 'IBM Plex Mono', monospace; }
   .leg-sep{ color: var(--line); }
   .stop-card{
@@ -517,6 +569,18 @@
   .debt-amt{ font-family:'IBM Plex Mono',monospace; font-weight: 600; font-size: 14.5px; color: var(--coral-dark); }
   .debt-settle-btn{ font-size: 12.5px; padding: 6px 12px; white-space: nowrap; }
 
+  .person-check{
+    display: flex; align-items: center; gap: 8px;
+    font-size: 14px; padding: 6px 2px; cursor: pointer;
+  }
+  .person-check input[type=checkbox]{ width: 16px; height: 16px; accent-color: var(--coral-dark); flex-shrink: 0; }
+  .person-check-grid{
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 2px 12px; margin-bottom: 6px;
+    border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px;
+    background: #fff;
+  }
+
   .badge-grid{
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -525,9 +589,12 @@
   .badge-card{
     background: var(--paper-raised); border: 1px solid var(--line-soft);
     border-radius: 12px; overflow: hidden; cursor: pointer;
-    transition: transform 0.15s ease, border-color 0.15s ease;
+    opacity: 0;
+    animation: fadeSlideUp 0.45s cubic-bezier(.2,.8,.3,1) both;
+    animation-delay: var(--stagger, 0ms);
+    transition: transform 0.25s cubic-bezier(.2,.9,.25,1.4), border-color 0.2s ease, box-shadow 0.25s ease;
   }
-  .badge-card:hover{ transform: translateY(-2px); border-color: var(--coral-dark); }
+  .badge-card:hover{ transform: translateY(-4px) rotate(-0.6deg) scale(1.02); border-color: var(--coral-dark); box-shadow: 0 14px 26px -16px rgba(54,45,76,0.4); }
   .badge-art{ height: 64px; position: relative; overflow: hidden; }
   .badge-ribbon{
     position: absolute; left: 12px; top: 0; width: 14px; height: 26px;
@@ -679,12 +746,12 @@
   /* ---------------- trip card art ---------------- */
 
   var PALETTES = [
-    { a:'#FFD7A8', b:'#FF9B85' },
-    { a:'#A8E6E0', b:'#5FB9CC' },
-    { a:'#DCC8F5', b:'#B79FE0' },
-    { a:'#C9EAB0', b:'#8FCB7A' },
-    { a:'#F7C6D9', b:'#E594B4' },
-    { a:'#FCE1A8', b:'#F0BE63' }
+    { a:'#E0813F', b:'#B85A2A' },
+    { a:'#3E9EB8', b:'#256B80' },
+    { a:'#8265C7', b:'#5C4494' },
+    { a:'#5FA33C', b:'#3D7326' },
+    { a:'#C4527E', b:'#963A5E' },
+    { a:'#C98A2C', b:'#96650F' }
   ];
 
   function hashStr(s){
@@ -757,14 +824,25 @@
     if(!MAPS_API_KEY) return Promise.reject(new Error('no api key'));
     if(mapsLoadPromise) return mapsLoadPromise;
     mapsLoadPromise = new Promise(function(resolve, reject){
-      if(window.google && window.google.maps && window.google.maps.DistanceMatrixService){
+      function waitForImportLibrary(attemptsLeft){
+        if(window.google && window.google.maps && typeof google.maps.importLibrary === 'function'){
+          resolve();
+          return;
+        }
+        if(attemptsLeft <= 0){
+          reject(new Error('google.maps.importLibrary not ready in time'));
+          return;
+        }
+        setTimeout(function(){ waitForImportLibrary(attemptsLeft - 1); }, 100);
+      }
+      if(window.google && window.google.maps && typeof google.maps.importLibrary === 'function'){
         resolve();
         return;
       }
       var script = document.createElement('script');
       script.src = 'https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(MAPS_API_KEY) + '&libraries=places&language=th&region=TH&loading=async';
       script.async = true;
-      script.onload = function(){ resolve(); };
+      script.onload = function(){ waitForImportLibrary(50); };
       script.onerror = function(){ reject(new Error('maps load failed')); };
       document.head.appendChild(script);
     });
@@ -776,7 +854,7 @@
     var slot = document.getElementById(slotId);
     var targetInput = document.getElementById(targetInputId);
     if(!slot || !targetInput) return;
-    slot.innerHTML = '<span class="leg-hint">กำลังโหลดระบบค้นหาสถานที่...</span>';
+    slot.innerHTML = '<span class="leg-hint loading">กำลังโหลดระบบค้นหาสถานที่...</span>';
     loadMapsApi().then(function(){
       return google.maps.importLibrary('places');
     }).then(function(placesLib){
@@ -1050,10 +1128,10 @@
       grid.appendChild(wrap);
       return;
     }
-    grid.innerHTML = trips.map(function(t){
+    grid.innerHTML = trips.map(function(t, idx){
       var dc = dayCount(t.startDate, t.endDate);
       var dateStr = t.startDate ? (fmtDate(t.startDate) + (t.endDate && t.endDate !== t.startDate ? ' – ' + fmtDate(t.endDate) : '')) : 'ยังไม่กำหนดวัน';
-      return '<div class="trip-card" data-id="' + t.id + '">' +
+      return '<div class="trip-card" data-id="' + t.id + '" style="--stagger:' + Math.min(idx * 60, 480) + 'ms;">' +
         tripArtHtml(t) +
         '<div class="stamp"><b>' + (dc || '?') + '</b><span>' + (dc ? 'วัน' : '') + '</span></div>' +
         '<div class="trip-card-body">' +
@@ -1107,10 +1185,10 @@
       }).join('');
     }
 
-    var badgesHtml = mine.length ? mine.map(function(t){
+    var badgesHtml = mine.length ? mine.map(function(t, idx){
       var pal = pickPalette(t);
       var icon = ICONS[pickIconName(t)];
-      return '<div class="badge-card" data-id="' + t.id + '">' +
+      return '<div class="badge-card" data-id="' + t.id + '" style="--stagger:' + Math.min(idx * 50, 400) + 'ms;">' +
         '<div class="badge-art" style="background: linear-gradient(135deg, ' + pal.a + ', ' + pal.b + '); color: rgba(255,255,255,0.55);">' + icon +
           '<span class="badge-ribbon" style="background:' + pal.b + ';"></span>' +
         '</div>' +
@@ -1121,7 +1199,7 @@
 
     wrap.innerHTML =
       '<button class="back-link" id="ach-back-btn">&larr; กลับไปหน้ารวมทริป</button>' +
-      '<div class="detail-hero" style="background: linear-gradient(135deg, var(--plum), var(--coral-dark));">' +
+      '<div class="detail-hero" style="background-image: linear-gradient(115deg, var(--plum), var(--coral-dark), var(--plum-dark));">' +
         '<div class="detail-hero-art" style="color: rgba(255,255,255,0.4);">' +
           '<svg viewBox="0 0 100 100"><circle cx="55" cy="42" r="26" fill="none" stroke="currentColor" stroke-width="4"/>' +
           '<path d="M55 20 L60 36 L77 36 L63 46 L68 62 L55 52 L42 62 L47 46 L33 36 L50 36 Z" fill="currentColor" opacity="0.9"/>' +
@@ -1297,7 +1375,7 @@
 
     wrap.innerHTML =
       '<button class="back-link" id="back-btn">&larr; กลับไปหน้ารวมทริป</button>' +
-      '<div class="detail-hero" style="background: linear-gradient(135deg, ' + pal.a + ', ' + pal.b + ');">' +
+      '<div class="detail-hero" style="background-image: linear-gradient(115deg, ' + pal.a + ', ' + pal.b + ', ' + pal.a + ');">' +
         '<div class="detail-hero-art" style="color: rgba(255,255,255,0.4);">' + icon + '</div>' +
         (dc ? '<div class="detail-hero-stamp"><b>' + dc + '</b><span>วัน</span></div>' : '') +
         '<div class="detail-hero-content">' +
@@ -1421,7 +1499,7 @@
         legEl.innerHTML = '<span class="leg-hint">ใส่ Google Maps API key ในโค้ดเพื่อดูระยะทาง/เวลาเดินทางอัตโนมัติ</span>';
         return;
       }
-      legEl.innerHTML = '<span class="leg-hint">กำลังคำนวณระยะทาง...</span>';
+      legEl.innerHTML = '<span class="leg-hint loading">กำลังคำนวณระยะทาง...</span>';
       getLegDistance(origin, destination).then(function(res){
         if(!res || (!res.walk && !res.drive)){
           legEl.innerHTML = mapsAuthFailed
@@ -1615,6 +1693,19 @@
       '</div>';
     }).join('') : '<p style="color:var(--ink-soft); font-size:14px; margin-top:12px;">ยังไม่มีรายการค้างเงินในทริปนี้</p>';
 
+    var people = (trip.participants && trip.participants.length) ? trip.participants.slice() : [state.user];
+    if(people.indexOf(state.user) === -1) people.unshift(state.user);
+
+    function peopleOptions(selected){
+      return people.map(function(p){
+        return '<option value="' + escapeHtml(p) + '"' + (p === selected ? ' selected' : '') + '>' + escapeHtml(p) + '</option>';
+      }).join('') + '<option value="__custom__">อื่นๆ (พิมพ์ชื่อเอง)</option>';
+    }
+
+    var borrowerChecksHtml = people.map(function(p){
+      return '<label class="person-check"><input type="checkbox" class="d-borrower-check" value="' + escapeHtml(p) + '"> ' + escapeHtml(p) + '</label>';
+    }).join('');
+
     content.innerHTML =
       '<div class="budget-summary">' +
         '<div class="sum-badge"><div class="label">คนอื่นค้างคุณ</div><div class="value">฿' + money(owedToMe) + '</div></div>' +
@@ -1622,15 +1713,33 @@
       '</div>' +
       '<div>' + rowsHtml + '</div>' +
       '<div class="inline-add-form" style="margin-top:18px;">' +
-        '<div class="row">' +
-          '<input id="d-borrower" type="text" placeholder="ชื่อคนยืม (ผู้ค้าง)">' +
-          '<input id="d-lender" type="text" placeholder="ชื่อคนให้ยืม" value="' + escapeHtml(state.user) + '">' +
-        '</div>' +
-        '<input id="d-amount" type="number" min="0" step="0.01" placeholder="จำนวนเงิน (บาท)">' +
+        '<label style="font-size:13px; font-weight:600; color:var(--ink-soft);">คนที่เป็นหนี้ (เลือกได้หลายคน)</label>' +
+        '<label class="person-check" style="font-weight:600;"><input type="checkbox" id="d-select-all"> เลือกทุกคนในทริป</label>' +
+        '<div class="person-check-grid">' + borrowerChecksHtml + '</div>' +
+        '<input id="d-borrower-extra" type="text" placeholder="เพิ่มชื่อคนอื่นที่ไม่อยู่ในลิสต์ (คั่นด้วยจุลภาค, ไม่บังคับ)">' +
+        '<label style="font-size:13px; font-weight:600; color:var(--ink-soft); margin-top:10px;">คนให้ยืม (คนที่จ่ายไปก่อน)</label>' +
+        '<select id="d-lender">' + peopleOptions(state.user) + '</select>' +
+        '<input id="d-lender-custom" type="text" placeholder="พิมพ์ชื่อคนให้ยืม" class="hide">' +
+        '<input id="d-amount" type="number" min="0" step="0.01" placeholder="ยอดรวมค่าใช้จ่ายทั้งหมด (บาท) — ระบบจะหารตามจำนวนคนที่เลือกให้อัตโนมัติ">' +
         '<input id="d-note" type="text" placeholder="โน้ต เช่น ค่าตั๋วเรือ (ไม่บังคับ)">' +
         '<div class="field-error" id="d-err"></div>' +
         '<button class="btn btn-primary" id="add-debt-btn" style="align-self:flex-start;">+ เพิ่มรายการค้างเงิน</button>' +
       '</div>';
+
+    var borrowerChecks = content.querySelectorAll('.d-borrower-check');
+    document.getElementById('d-select-all').addEventListener('change', function(e){
+      borrowerChecks.forEach(function(cb){ cb.checked = e.target.checked; });
+    });
+
+    function wirePersonSelect(selectId, customId){
+      var sel = document.getElementById(selectId);
+      var custom = document.getElementById(customId);
+      sel.addEventListener('change', function(){
+        custom.classList.toggle('hide', sel.value !== '__custom__');
+        if(sel.value === '__custom__') custom.focus();
+      });
+    }
+    wirePersonSelect('d-lender', 'd-lender-custom');
 
     content.querySelectorAll('[data-toggle-debt]').forEach(function(btn){
       btn.addEventListener('click', function(){
@@ -1648,26 +1757,44 @@
       });
     });
     document.getElementById('add-debt-btn').addEventListener('click', function(){
-      var borrowerEl = document.getElementById('d-borrower');
-      var lenderEl = document.getElementById('d-lender');
+      var lenderSel = document.getElementById('d-lender');
       var amountEl = document.getElementById('d-amount');
       var errEl = document.getElementById('d-err');
-      var borrower = borrowerEl.value.trim();
-      var lender = lenderEl.value.trim();
+      var lender = lenderSel.value === '__custom__' ? document.getElementById('d-lender-custom').value.trim() : lenderSel.value;
+
+      var borrowers = [];
+      content.querySelectorAll('.d-borrower-check:checked').forEach(function(cb){
+        if(borrowers.indexOf(cb.value) === -1) borrowers.push(cb.value);
+      });
+      document.getElementById('d-borrower-extra').value.split(',').forEach(function(name){
+        name = name.trim();
+        if(name && borrowers.indexOf(name) === -1) borrowers.push(name);
+      });
+      borrowers = borrowers.filter(function(b){ return b.toLowerCase() !== (lender || '').toLowerCase(); });
+
       var amount = amountEl.value;
-      if(!borrower || !lender || !amount || isNaN(Number(amount)) || Number(amount) <= 0){
-        errEl.textContent = 'กรุณาใส่ชื่อคนยืม ชื่อคนให้ยืม และจำนวนเงินให้ถูกต้อง';
+      if(!lender || borrowers.length === 0 || !amount || isNaN(Number(amount)) || Number(amount) <= 0){
+        errEl.textContent = 'กรุณาเลือกคนที่เป็นหนี้อย่างน้อย 1 คน เลือกคนให้ยืม และใส่ยอดรวมให้ถูกต้อง';
         return;
       }
       errEl.textContent = '';
-      trip.debts = debts.concat([{
-        id: uid('debt'),
-        borrower: borrower,
-        lender: lender,
-        amount: Number(amount),
-        note: document.getElementById('d-note').value.trim(),
-        settled: false
-      }]);
+
+      var perPerson = Math.round((Number(amount) / borrowers.length) * 100) / 100;
+      var baseNote = document.getElementById('d-note').value.trim();
+      var splitNote = borrowers.length > 1 ? 'หารเท่ากัน ' + borrowers.length + ' คน จากยอดรวม ฿' + money(amount) : '';
+      var note = [baseNote, splitNote].filter(Boolean).join(' — ');
+
+      var newDebts = borrowers.map(function(b){
+        return {
+          id: uid('debt'),
+          borrower: b,
+          lender: lender,
+          amount: perPerson,
+          note: note,
+          settled: false
+        };
+      });
+      trip.debts = debts.concat(newDebts);
       apiUpsertTrip(trip).then(function(){ renderDebts(trip); });
     });
   }
