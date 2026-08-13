@@ -337,6 +337,8 @@
     z-index: 9999;
   }
   .pac-item{ font-size: 13.5px; padding: 8px 10px; }
+  .place-picker-slot{ margin-top: 6px; }
+  .place-picker-slot gmp-place-autocomplete{ width: 100%; display: block; }
   .modal{
     background: var(--paper-raised);
     border-radius: 18px;
@@ -760,7 +762,8 @@
         return;
       }
       var script = document.createElement('script');
-      script.src = 'https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(MAPS_API_KEY) + '&libraries=places&language=th&region=TH';
+      script.src = 'https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(MAPS_API_KEY) + '&libraries=places&language=th&region=TH&loading=async';
+      script.async = true;
       script.onload = function(){ resolve(); };
       script.onerror = function(){ reject(new Error('maps load failed')); };
       document.head.appendChild(script);
@@ -768,22 +771,35 @@
     return mapsLoadPromise;
   }
 
-  function attachPlaceAutocomplete(inputEl){
-    if(!MAPS_API_KEY || !inputEl) return;
+  function mountPlacePicker(slotId, targetInputId){
+    if(!MAPS_API_KEY) return;
+    var slot = document.getElementById(slotId);
+    var targetInput = document.getElementById(targetInputId);
+    if(!slot || !targetInput) return;
+    slot.innerHTML = '<span class="leg-hint">กำลังโหลดระบบค้นหาสถานที่...</span>';
     loadMapsApi().then(function(){
-      if(!window.google || !google.maps.places){
-        console.error('Google Maps: ไลบรารี places ไม่พร้อมใช้งาน ตรวจสอบว่าเปิด "Places API" ใน Cloud Console แล้ว');
-        return;
+      return google.maps.importLibrary('places');
+    }).then(function(placesLib){
+      if(!placesLib || !placesLib.PlaceAutocompleteElement){
+        throw new Error('PlaceAutocompleteElement unavailable');
       }
-      var ac = new google.maps.places.Autocomplete(inputEl, { fields: ['name', 'formatted_address'] });
-      ac.addListener('place_changed', function(){
-        var place = ac.getPlace();
-        if(place && place.name){
-          inputEl.value = place.name;
-        }
+      var picker = new placesLib.PlaceAutocompleteElement({});
+      picker.placeholder = 'ค้นหาสถานที่จาก Google Maps (ไม่บังคับ — พิมพ์เองด้านบนได้เลย)';
+      slot.innerHTML = '';
+      slot.appendChild(picker);
+      picker.addEventListener('gmp-select', function(evt){
+        var prediction = evt.placePrediction;
+        if(!prediction) return;
+        var place = prediction.toPlace();
+        place.fetchFields({ fields: ['displayName'] }).then(function(){
+          if(place.displayName) targetInput.value = place.displayName;
+        }).catch(function(){});
       });
     }).catch(function(err){
-      console.error('Google Maps: โหลด Autocomplete ไม่สำเร็จ', err);
+      console.error('Google Maps: โหลดระบบค้นหาสถานที่ไม่สำเร็จ — ตรวจสอบว่าเปิด "Places API (New)" ใน Cloud Console แล้ว', err);
+      slot.innerHTML = mapsAuthFailed
+        ? '<span class="leg-hint">Google Maps API key ยืนยันตัวตนไม่ผ่าน</span>'
+        : '<span class="leg-hint">ค้นหาสถานที่อัตโนมัติใช้ไม่ได้ตอนนี้ (เช็คว่าเปิด Places API (New) แล้ว) — พิมพ์ชื่อเองด้านบนได้เลย</span>';
     });
   }
 
@@ -1155,6 +1171,7 @@
           '<div class="field">' +
             '<label>จุดหมาย</label>' +
             '<input id="m-dest" type="text" placeholder="เช่น เกาะสมุย, ประเทศไทย">' +
+            '<div id="dest-place-picker" class="place-picker-slot"></div>' +
           '</div>' +
           '<div class="field row2">' +
             '<div><label>วันที่เริ่ม</label><input id="m-start" type="date"></div>' +
@@ -1188,7 +1205,7 @@
       visPrivate.classList.remove('selected');
     });
 
-    attachPlaceAutocomplete(document.getElementById('m-dest'));
+    mountPlacePicker('dest-place-picker', 'm-dest');
 
     document.getElementById('m-cancel').addEventListener('click', closeModal);
     document.getElementById('modal-backdrop').addEventListener('click', function(e){
@@ -1387,6 +1404,7 @@
           '<input id="stop-time" type="time">' +
           '<input id="stop-name" type="text" placeholder="ชื่อสถานที่หรือกิจกรรม">' +
         '</div>' +
+        '<div id="stop-place-picker" class="place-picker-slot"></div>' +
         '<input id="stop-note" type="text" placeholder="โน้ตเพิ่มเติม (ไม่บังคับ)">' +
         '<div class="field-error" id="stop-err"></div>' +
         '<button class="btn btn-primary" id="add-stop-btn" style="align-self:flex-start;">+ เพิ่มจุดแวะ</button>' +
@@ -1418,7 +1436,7 @@
       });
     });
 
-    attachPlaceAutocomplete(document.getElementById('stop-name'));
+    mountPlacePicker('stop-place-picker', 'stop-name');
 
     content.querySelectorAll('[data-day]').forEach(function(btn){
       btn.addEventListener('click', function(){
