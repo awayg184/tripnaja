@@ -542,11 +542,32 @@
     color: #fff;
   }
 
-  .participant-row{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top: 14px; }
-  .participant-chip{
-    font-size: 12.5px; font-weight: 600; color: #fff;
-    background: rgba(255,255,255,0.16); border: 1px solid rgba(255,255,255,0.32);
-    padding: 4px 12px; border-radius: 999px;
+  .participants-section{ margin: 18px 0 4px; }
+  .participants-heading{
+    display: flex; align-items: center; gap: 10px;
+    font-size: 15px; margin: 0 0 12px;
+  }
+  .participants-list{ display: flex; flex-wrap: wrap; gap: 10px; }
+  .participant-card{
+    display: flex; align-items: center; gap: 8px;
+    background: var(--paper-raised); border: 1px solid var(--line-soft);
+    border-radius: 999px; padding: 6px 14px 6px 6px;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+  }
+  .participant-card:hover{ transform: translateY(-2px); }
+  .participant-card.me{ border-color: var(--coral-dark); background: rgba(150,57,90,0.06); }
+  .participant-avatar{
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--plum); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; font-family: 'Noto Serif Thai', serif;
+    flex-shrink: 0;
+  }
+  .participant-name{ font-size: 13.5px; font-weight: 600; color: var(--ink); }
+  .participant-owner-tag{
+    font-size: 10px; font-family: 'IBM Plex Mono', monospace; text-transform: uppercase;
+    letter-spacing: 0.04em; color: var(--gold); background: rgba(180,134,58,0.14);
+    padding: 2px 8px; border-radius: 999px; margin-left: 2px;
   }
 
   .subtabs{ display:flex; gap: 4px; margin: 22px 0 0; flex-wrap: wrap; position: relative; z-index: 1; }
@@ -963,6 +984,24 @@
     var label = PIN_ICON_SMALL + (info.flag ? '<span class="dest-flag">' + info.flag + '</span>' : '') + escapeHtml(destText);
     if(trip.destination) label += mapsLinkHtml(trip.destination);
     return label;
+  }
+
+  function participantsSectionHtml(trip){
+    var people = trip.participants && trip.participants.length ? trip.participants : [trip.owner];
+    var cardsHtml = people.map(function(p){
+      var isOwner = p === trip.owner;
+      var isMe = p === state.user;
+      var initial = (p.trim()[0] || '?').toUpperCase();
+      return '<div class="participant-card' + (isMe ? ' me' : '') + '">' +
+        '<span class="participant-avatar">' + escapeHtml(initial) + '</span>' +
+        '<span class="participant-name">' + escapeHtml(p) + (isMe ? ' (คุณ)' : '') + '</span>' +
+        (isOwner ? '<span class="participant-owner-tag">เจ้าของทริป</span>' : '') +
+      '</div>';
+    }).join('');
+    return '<div class="participants-section">' +
+      '<h3 class="participants-heading">ผู้ร่วมทริป <span class="trip-section-count">' + people.length + '</span></h3>' +
+      '<div class="participants-list">' + cardsHtml + '</div>' +
+    '</div>';
   }
 
   var ICONS = {
@@ -1740,23 +1779,32 @@
 
   function openTripDetail(id){
     state.currentTripId = id;
-    var trip = findTrip(id);
-    if(!trip) return renderDashboard();
-    if(trip.days.length === 0){
-      trip.days.push({ id: uid('day'), label: 'วันที่ 1', stops: [] });
-    }
-    if(!trip.participants) trip.participants = trip.owner ? [trip.owner] : [];
-    if(!trip.debts) trip.debts = [];
-    state.currentDayId = trip.days[0].id;
+    var quickTrip = findTrip(id);
+    if(!quickTrip) return renderDashboard();
     state.subtab = 'itinerary';
     document.getElementById('dashboard-view').classList.add('hide');
     document.getElementById('achievement-view').classList.add('hide');
     document.getElementById('detail-view').classList.remove('hide');
-    if(trip.visibility === 'shared' && trip.participants.indexOf(state.user) === -1){
-      trip.participants.push(state.user);
-      apiUpsertTrip(trip);
-    }
-    renderTripDetail();
+    document.getElementById('detail-view').innerHTML = '<p class="leg-hint loading" style="font-size:14px; padding:20px 0;">กำลังโหลดข้อมูลล่าสุด...</p>';
+
+    reloadTripsSilently().then(function(){
+      var trip = findTrip(id);
+      if(!trip) return renderDashboard();
+      if(trip.days.length === 0){
+        trip.days.push({ id: uid('day'), label: 'วันที่ 1', stops: [] });
+      }
+      if(!trip.participants) trip.participants = trip.owner ? [trip.owner] : [];
+      if(!trip.debts) trip.debts = [];
+      state.currentDayId = trip.days[0].id;
+      if(trip.visibility === 'shared' && trip.participants.indexOf(state.user) === -1){
+        trip.participants.push(state.user);
+        apiUpsertTrip(trip).then(reloadTripsSilently).then(function(){
+          renderTripDetail();
+        });
+        return;
+      }
+      renderTripDetail();
+    });
   }
 
   function backToDashboard(){
@@ -1786,13 +1834,10 @@
           '<div class="meta-row">' +
             '<span>' + dateStr + '</span>' +
             '<span class="visibility-pill ' + trip.visibility + '">' + (trip.visibility === 'shared' ? 'ทริปรวม' : 'ทริปส่วนตัว') + '</span>' +
-            '<span class="eyebrow" style="color:rgba(255,255,255,0.8);">โดย ' + escapeHtml(trip.owner) + '</span>' +
           '</div>' +
-          (trip.visibility === 'shared' ? '<div class="participant-row">' +
-            (trip.participants || []).map(function(p){ return '<span class="participant-chip">' + escapeHtml(p) + '</span>'; }).join('') +
-          '</div>' : '') +
         '</div>' +
       '</div>' +
+      participantsSectionHtml(trip) +
       '<div class="subtabs">' +
         '<button class="subtab-btn" data-sub="itinerary"><svg viewBox="0 0 20 20"><path d="M3 5h14M3 10h14M3 15h9" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>แผนการเดินทาง</button>' +
         '<button class="subtab-btn" data-sub="budget"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M10 6v8M7.5 8.5c0-1.4 1.1-2 2.5-2s2.5.7 2.5 1.8c0 2.6-5 1.3-5 3.8 0 1.1 1.1 1.9 2.5 1.9s2.5-.7 2.5-1.9" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linecap="round"/></svg>งบประมาณ</button>' +
