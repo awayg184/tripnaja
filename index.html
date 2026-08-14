@@ -1793,11 +1793,24 @@
       if(trip.days.length === 0){
         trip.days.push({ id: uid('day'), label: 'วันที่ 1', stops: [] });
       }
-      if(!trip.participants) trip.participants = trip.owner ? [trip.owner] : [];
+      if(!trip.participants || !trip.participants.length){
+        trip.participants = trip.owner ? [trip.owner] : [];
+      }
       if(!trip.debts) trip.debts = [];
       state.currentDayId = trip.days[0].id;
+
+      var needsSave = false;
+      /* self-heal: repair trips where the owner got dropped from participants by the old bug */
+      if(trip.owner && trip.participants.indexOf(trip.owner) === -1){
+        trip.participants.unshift(trip.owner);
+        needsSave = true;
+      }
       if(trip.visibility === 'shared' && trip.participants.indexOf(state.user) === -1){
         trip.participants.push(state.user);
+        needsSave = true;
+      }
+
+      if(needsSave){
         apiUpsertTrip(trip).then(reloadTripsSilently).then(function(){
           renderTripDetail();
         });
