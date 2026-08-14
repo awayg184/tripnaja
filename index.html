@@ -222,6 +222,15 @@
     flex-wrap: wrap;
   }
   header.top .who{ display:flex; align-items:center; gap:10px; }
+  .sync-row{ display:flex; align-items:center; gap:6px; font-size:12px; color:var(--ink-soft); }
+  .sync-dot{ width:7px; height:7px; border-radius:50%; background:var(--ink-soft); flex-shrink:0; }
+  .sync-dot.ok{ background: var(--teal-dark); }
+  .sync-dot.err{ background: var(--danger); }
+  .sync-dot.spin{ background: var(--gold); animation: softPulse 1s ease-in-out infinite; }
+  .refresh-btn{ padding: 8px; border-radius: 999px; }
+  .refresh-btn svg{ width: 16px; height: 16px; display: block; }
+  .refresh-btn.spin-icon svg{ animation: spinIcon 0.7s linear infinite; }
+  @keyframes spinIcon{ from{ transform: rotate(0deg); } to{ transform: rotate(360deg); } }
   .avatar-stamp{
     width: 40px; height: 40px;
     border-radius: 50%;
@@ -306,7 +315,7 @@
     padding: 10px 14px;
     overflow: hidden;
   }
-  .trip-card-art svg{ position:absolute; right:-6px; bottom:-8px; width:104px; height:104px; opacity:0.9; transition: transform 0.35s cubic-bezier(.2,.9,.25,1.2); }
+  .trip-card-art svg{ position:absolute; right:-4px; bottom:-4px; width:58px; height:58px; opacity:0.75; z-index:0; transition: transform 0.35s cubic-bezier(.2,.9,.25,1.2); }
   .trip-card:hover .trip-card-art svg{ transform: scale(1.12) rotate(4deg); }
   .trip-card-body{ padding: 14px 18px 16px; }
   .trip-card .stamp{
@@ -332,12 +341,12 @@
     text-transform: uppercase;
     letter-spacing: 0.06em;
     color: #fff;
-    background: rgba(0,0,0,0.16);
-    border: 1px solid rgba(255,255,255,0.25);
+    background: rgba(0,0,0,0.32);
+    border: 1px solid rgba(255,255,255,0.3);
     padding: 4px 10px 4px 8px;
     border-radius: 999px;
     position: relative;
-    z-index: 1;
+    z-index: 2;
   }
   .dest-pin{ width: 10px; height: 10px; flex-shrink: 0; opacity: 0.9; }
   .dest-flag{ font-size: 12px; line-height: 1; }
@@ -639,12 +648,18 @@
   .budget-row .amt{ font-family:'IBM Plex Mono',monospace; font-size: 14px; font-weight: 500; }
 
   .checklist-row{
-    display: flex; align-items: center; gap: 10px; padding: 9px 0;
+    display: flex; align-items: flex-start; gap: 10px; padding: 9px 0;
     border-bottom: 1px solid var(--line-soft);
   }
-  .checklist-row input[type=checkbox]{ width: 18px; height: 18px; flex-shrink: 0; accent-color: var(--coral); }
-  .checklist-row .text{ flex: 1; font-size: 14.5px; }
+  .checklist-row input[type=checkbox]{ width: 18px; height: 18px; flex-shrink: 0; accent-color: var(--coral); margin-top: 2px; }
+  .checklist-body{ flex: 1; }
+  .checklist-row .text{ font-size: 14.5px; }
   .checklist-row.done .text{ text-decoration: line-through; color: var(--ink-soft); }
+  .checklist-who{ display: flex; flex-wrap: wrap; gap: 5px; margin-top: 5px; }
+  .who-chip{
+    font-size: 11px; font-weight: 600; color: var(--teal-dark);
+    background: rgba(51,115,103,0.1); border-radius: 999px; padding: 2px 9px;
+  }
 
   .debt-row{
     display: flex; align-items: center; gap: 12px; padding: 12px 0;
@@ -688,7 +703,7 @@
     clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 78%, 0 100%);
     opacity: 0.85;
   }
-  .badge-art svg{ position:absolute; right:-10px; bottom:-10px; width:80px; height:80px; opacity:0.9; }
+  .badge-art svg{ position:absolute; right:-6px; bottom:-6px; width:52px; height:52px; opacity:0.8; }
   .badge-title{ font-weight: 600; font-size: 13.5px; padding: 10px 12px 2px; }
   .badge-dest{ display: flex; align-items: center; gap: 4px; font-size: 11.5px; color: var(--ink-soft); padding: 0 12px 12px; }
   .badge-dest .dest-pin{ width: 9px; height: 9px; color: var(--coral-dark); }
@@ -710,7 +725,7 @@
   @media (max-width: 520px){
     .row2{ grid-template-columns: 1fr; }
     .detail-header h1{ font-size: 24px; }
-    .detail-hero-content{ max-width: 100%; }
+    .detail-hero-content{ max-width: calc(100% - 62px); }
     .detail-hero-content h1{ font-size: 22px; }
     .detail-hero{ padding: 24px 20px; }
     .detail-hero-art{ width: 150px; height: 150px; right: -20px; bottom: -20px; opacity: 0.7; }
@@ -745,10 +760,13 @@
         <div class="avatar-stamp" id="avatar-initial">A</div>
         <div>
           <div style="font-weight:700; font-size:15px;" id="who-name">-</div>
-          <div class="eyebrow" id="who-sub">นักเดินทาง</div>
+          <div class="sync-row"><span class="sync-dot" id="sync-dot"></span><span id="sync-text">นักเดินทาง</span></div>
         </div>
       </div>
-      <div style="display:flex; gap:8px;">
+      <div style="display:flex; gap:8px; align-items:center;">
+        <button class="btn btn-ghost refresh-btn" id="refresh-btn" title="รีเฟรชข้อมูล" aria-label="รีเฟรชข้อมูล">
+          <svg viewBox="0 0 20 20"><path d="M4 10a6 6 0 0110-4.2M16 10a6 6 0 01-10 4.2" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/><path d="M14 3v3h-3M6 17v-3h3" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
         <button class="btn btn-ghost" id="achievement-btn">ความสำเร็จ</button>
         <button class="btn btn-ghost" id="logout-btn">ออกจากระบบ</button>
       </div>
@@ -861,9 +879,15 @@
     function has(list){
       return list.some(function(k){ return text.indexOf(k) !== -1; });
     }
-    if(has(['ทะเล','เกาะ','หาด','ชายหาด','beach','island','sea','samui','phuket','ภูเก็ต','สมุย'])) return 'beach';
-    if(has(['ภูเขา','ดอย','เขา','mountain','peak','เชียงใหม่','chiang mai','เชียงราย','ปาย','pai'])) return 'mountain';
-    if(has(['เมือง','กรุง','city','bangkok','กทม','โตเกียว','tokyo','โซล','seoul','สิงคโปร์','singapore','ลอนดอน','london','ปารีส','paris'])) return 'city';
+    if(has(['ทะเล','เกาะ','หาด','ชายหาด','beach','island','sea','samui','phuket','ภูเก็ต','สมุย',
+      'บาหลี','bali','indonesia','อินโดนีเซีย','philippines','ฟิลิปปินส์','maldives','มัลดีฟส์'])) return 'beach';
+    if(has(['ภูเขา','ดอย','เขา','mountain','peak','เชียงใหม่','chiang mai','เชียงราย','ปาย','pai',
+      'switzerland','สวิส','nepal','เนปาล','ลาว','laos'])) return 'mountain';
+    if(has(['เมือง','กรุง','city','bangkok','กทม','โตเกียว','tokyo','โซล','seoul','สิงคโปร์','singapore',
+      'ลอนดอน','london','ปารีส','paris','japan','ญี่ปุ่น','korea','เกาหลี','vietnam','เวียดนาม',
+      'taiwan','ไต้หวัน','china','จีน','hong kong','ฮ่องกง','malaysia','มาเลเซีย','italy','อิตาลี',
+      'spain','สเปน','germany','เยอรมัน','india','อินเดีย','turkey','ตุรกี','usa','america','อเมริกา',
+      'uk','england','อังกฤษ','france','ฝรั่งเศส','australia','ออสเตรเลีย','dubai','ดูไบ'])) return 'city';
     if(has(['ป่า','forest','nature','อุทยาน','national park','safari','เขื่อน','น้ำตก','waterfall'])) return 'forest';
     return 'compass';
   }
@@ -956,9 +980,9 @@
       '<rect x="83" y="40" width="13" height="52" fill="currentColor" opacity="0.8"/></svg>',
     forest: '<svg viewBox="0 0 100 100"><path d="M22 90 L22 74 L10 74 L24 52 L14 52 L28 30 L42 52 L32 52 L46 74 L34 74 L34 90 Z" fill="currentColor" opacity="0.85"/>' +
       '<path d="M66 90 L66 78 L56 78 L68 60 L60 60 L72 42 L84 60 L76 60 L88 78 L78 78 L78 90 Z" fill="currentColor" opacity="0.7"/></svg>',
-    compass: '<svg viewBox="0 0 100 100"><circle cx="55" cy="46" r="34" fill="none" stroke="currentColor" stroke-width="4" opacity="0.85"/>' +
-      '<path d="M55 20 L64 46 L55 72 L46 46 Z" fill="currentColor" opacity="0.9"/>' +
-      '<circle cx="55" cy="46" r="4.5" fill="currentColor"/></svg>'
+    compass: '<svg viewBox="0 0 100 100"><circle cx="55" cy="46" r="30" fill="none" stroke="currentColor" stroke-width="3.5" opacity="0.9"/>' +
+      '<ellipse cx="55" cy="46" rx="13" ry="30" fill="none" stroke="currentColor" stroke-width="2.8" opacity="0.8"/>' +
+      '<path d="M25 46 H85 M29 30 H81 M29 62 H81" stroke="currentColor" stroke-width="2.8" fill="none" opacity="0.8" stroke-linecap="round"/></svg>'
   };
 
   function tripArtHtml(trip){
@@ -1149,12 +1173,60 @@
     });
   }
 
-  function loadTrips(){
+  function reloadTripsSilently(){
     return apiListTrips().then(function(trips){
       state.trips = trips;
     }).catch(function(){
+      /* silent — keep last known state.trips if a background reload fails */
+    });
+  }
+
+  function loadTrips(){
+    return apiListTrips().then(function(trips){
+      state.trips = trips;
+      return true;
+    }).catch(function(){
       state.trips = [];
       showPopup('โหลดข้อมูลจาก Google Sheet ไม่สำเร็จ ตรวจสอบลิงก์ Apps Script ในหน้าตั้งค่าอีกครั้ง', { danger: true });
+      return false;
+    });
+  }
+
+  function setSyncStatus(state_, text){
+    var dot = document.getElementById('sync-dot');
+    var txt = document.getElementById('sync-text');
+    if(!dot || !txt) return;
+    dot.className = 'sync-dot' + (state_ ? ' ' + state_ : '');
+    txt.textContent = text;
+  }
+
+  function nowTimeStr(){
+    return new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  function rerenderCurrentView(){
+    if(!document.getElementById('detail-view').classList.contains('hide')){
+      var t = state.currentTripId ? findTrip(state.currentTripId) : null;
+      if(t) renderTripDetail(); else renderDashboard();
+    } else if(!document.getElementById('achievement-view').classList.contains('hide')){
+      renderAchievements();
+    } else {
+      renderDashboard();
+    }
+  }
+
+  function refreshData(){
+    var btn = document.getElementById('refresh-btn');
+    btn.classList.add('spin-icon');
+    setSyncStatus('spin', 'กำลังโหลด...');
+    loadTrips().then(function(success){
+      btn.classList.remove('spin-icon');
+      if(success){
+        setSyncStatus('ok', 'ซิงค์แล้ว · ' + nowTimeStr());
+        rerenderCurrentView();
+      } else {
+        setSyncStatus('err', 'โหลดไม่สำเร็จ');
+      }
     });
   }
 
@@ -1196,13 +1268,14 @@
     }
     loginBtn.disabled = true;
     loginBtn.textContent = 'กำลังเชื่อมต่อ...';
-    loadTrips().then(function(){
+    loadTrips().then(function(success){
       loginBtn.disabled = false;
       loginBtn.textContent = 'เข้าสู่สมุดเดินทาง';
       document.getElementById('who-name').textContent = name;
       document.getElementById('avatar-initial').textContent = name.trim()[0].toUpperCase();
       document.getElementById('login-view').classList.add('hide');
       document.getElementById('main-view').classList.remove('hide');
+      setSyncStatus(success ? 'ok' : 'err', success ? 'ซิงค์แล้ว · ' + nowTimeStr() : 'โหลดไม่สำเร็จ');
       renderDashboard();
     });
   }
@@ -1224,6 +1297,8 @@
     document.getElementById('main-view').classList.add('hide');
     document.getElementById('login-view').classList.remove('hide');
   });
+
+  document.getElementById('refresh-btn').addEventListener('click', refreshData);
 
   document.getElementById('achievement-btn').addEventListener('click', function(){
     document.getElementById('dashboard-view').classList.add('hide');
@@ -1501,7 +1576,7 @@
         createdAt: Date.now()
       };
       state.trips.push(trip);
-      apiUpsertTrip(trip).then(function(){
+      apiUpsertTrip(trip).then(reloadTripsSilently).then(function(){
         closeModal();
         renderAchievements();
       });
@@ -1592,7 +1667,7 @@
         createdAt: Date.now()
       };
       state.trips.push(trip);
-      apiUpsertTrip(trip).then(function(){
+      apiUpsertTrip(trip).then(reloadTripsSilently).then(function(){
         closeModal();
         state.scope = vis;
         tabBtns.forEach(function(b){
@@ -1677,6 +1752,10 @@
     document.getElementById('dashboard-view').classList.add('hide');
     document.getElementById('achievement-view').classList.add('hide');
     document.getElementById('detail-view').classList.remove('hide');
+    if(trip.visibility === 'shared' && trip.participants.indexOf(state.user) === -1){
+      trip.participants.push(state.user);
+      apiUpsertTrip(trip);
+    }
     renderTripDetail();
   }
 
@@ -1691,8 +1770,6 @@
     var canEdit = trip.owner === state.user || trip.visibility === 'shared';
     var wrap = document.getElementById('detail-view');
     var dateStr = trip.startDate ? (fmtDate(trip.startDate) + (trip.endDate && trip.endDate !== trip.startDate ? ' – ' + fmtDate(trip.endDate) : '')) : 'ยังไม่กำหนดวัน';
-    var isParticipant = (trip.participants || []).indexOf(state.user) !== -1;
-    var canJoin = trip.visibility === 'shared' && !isParticipant;
 
     var pal = pickPalette(trip);
     var icon = ICONS[pickIconName(trip)];
@@ -1713,7 +1790,6 @@
           '</div>' +
           (trip.visibility === 'shared' ? '<div class="participant-row">' +
             (trip.participants || []).map(function(p){ return '<span class="participant-chip">' + escapeHtml(p) + '</span>'; }).join('') +
-            (canJoin ? '<button class="btn" id="join-trip-btn" style="padding:6px 14px; font-size:13px; border-color:rgba(255,255,255,0.5); color:#fff;">+ ฉันไปด้วย</button>' : '') +
           '</div>' : '') +
         '</div>' +
       '</div>' +
@@ -1729,13 +1805,6 @@
       '</div>';
 
     document.getElementById('back-btn').addEventListener('click', backToDashboard);
-    var joinBtn = document.getElementById('join-trip-btn');
-    if(joinBtn){
-      joinBtn.addEventListener('click', function(){
-        trip.participants = (trip.participants || []).concat([state.user]);
-        apiUpsertTrip(trip).then(function(){ renderTripDetail(); });
-      });
-    }
     var subBtns = wrap.querySelectorAll('.subtab-btn');
     subBtns.forEach(function(b){
       b.classList.toggle('active', b.getAttribute('data-sub') === state.subtab);
@@ -1749,8 +1818,7 @@
       delBtn.addEventListener('click', function(){
         showConfirmPopup('ลบทริป "' + trip.title + '" ใช่ไหม? ลบแล้วกู้คืนไม่ได้', { confirmLabel: 'ลบทริปนี้' }).then(function(confirmed){
           if(!confirmed) return;
-          apiDeleteTrip(trip.id).then(function(){
-            state.trips = state.trips.filter(function(t){ return t.id !== trip.id; });
+          apiDeleteTrip(trip.id).then(reloadTripsSilently).then(function(){
             backToDashboard();
           });
         });
@@ -1849,13 +1917,13 @@
       var newDay = { id: uid('day'), label: 'วันที่ ' + (trip.days.length + 1), stops: [] };
       trip.days.push(newDay);
       state.currentDayId = newDay.id;
-      apiUpsertTrip(trip).then(function(){ renderItinerary(trip); });
+      apiUpsertTrip(trip).then(reloadTripsSilently).then(function(){ renderItinerary(findTrip(trip.id) || trip); });
     });
     content.querySelectorAll('[data-del-stop]').forEach(function(btn){
       btn.addEventListener('click', function(){
         var did = btn.getAttribute('data-del-stop');
         day.stops = day.stops.filter(function(s){ return s.id !== did; });
-        apiUpsertTrip(trip).then(function(){ renderItinerary(trip); });
+        apiUpsertTrip(trip).then(reloadTripsSilently).then(function(){ renderItinerary(findTrip(trip.id) || trip); });
       });
     });
     document.getElementById('add-stop-btn').addEventListener('click', function(){
@@ -1873,7 +1941,7 @@
         name: name,
         note: document.getElementById('stop-note').value.trim()
       });
-      apiUpsertTrip(trip).then(function(){ renderItinerary(trip); });
+      apiUpsertTrip(trip).then(reloadTripsSilently).then(function(){ renderItinerary(findTrip(trip.id) || trip); });
     });
   }
 
@@ -1918,7 +1986,7 @@
       btn.addEventListener('click', function(){
         var bid = btn.getAttribute('data-del-budget');
         trip.budget = trip.budget.filter(function(b){ return b.id !== bid; });
-        apiUpsertTrip(trip).then(function(){ renderBudget(trip); });
+        apiUpsertTrip(trip).then(reloadTripsSilently).then(function(){ renderBudget(findTrip(trip.id) || trip); });
       });
     });
     document.getElementById('add-budget-btn').addEventListener('click', function(){
@@ -1938,46 +2006,86 @@
         item: item,
         amount: Number(amount)
       });
-      apiUpsertTrip(trip).then(function(){ renderBudget(trip); });
+      apiUpsertTrip(trip).then(reloadTripsSilently).then(function(){ renderBudget(findTrip(trip.id) || trip); });
     });
   }
 
   /* ----- checklist ----- */
 
+  var CHECKLIST_BASE_ITEMS = [
+    'โทรศัพท์ + สายชาร์จ', 'Power bank', 'เงินสด/บัตรเครดิต', 'ยาประจำตัว (ถ้ามี)',
+    'แปรงสีฟัน/ยาสีฟัน', 'ครีมกันแดด', 'เสื้อผ้าให้พอกับจำนวนวัน', 'ร่มหรือเสื้อกันฝน'
+  ];
+  var CHECKLIST_TH_ITEMS = ['บัตรประชาชน', 'ยาแก้เมารถ/เมาเรือ (ถ้าเดินทางไกล)'];
+  var CHECKLIST_INTL_ITEMS = [
+    'พาสปอร์ต (เช็ควันหมดอายุ)', 'ตั๋วเครื่องบิน/เอกสารการเดินทาง',
+    'ปลั๊กแปลงไฟสากล', 'ประกันการเดินทาง', 'เงินสกุลท้องถิ่น/บัตรที่ใช้ต่างประเทศได้'
+  ];
+
   function renderChecklist(trip){
     var content = document.getElementById('subtab-content');
-    var doneCount = trip.checklist.filter(function(c){ return c.done; }).length;
+    trip.checklist.forEach(function(c){
+      if(!c.doneBy) c.doneBy = [];
+    });
+    var doneCount = trip.checklist.filter(function(c){ return c.doneBy.indexOf(state.user) !== -1; }).length;
 
     var rowsHtml = trip.checklist.length ? trip.checklist.map(function(c){
-      return '<div class="checklist-row' + (c.done ? ' done' : '') + '">' +
-        '<input type="checkbox" data-toggle="' + c.id + '" ' + (c.done ? 'checked' : '') + '>' +
-        '<span class="text">' + escapeHtml(c.text) + '</span>' +
+      var mineChecked = c.doneBy.indexOf(state.user) !== -1;
+      var whoHtml = c.doneBy.length
+        ? '<div class="checklist-who">' + c.doneBy.map(function(p){ return '<span class="who-chip">✓ ' + escapeHtml(p) + '</span>'; }).join('') + '</div>'
+        : '';
+      return '<div class="checklist-row' + (mineChecked ? ' done' : '') + '">' +
+        '<input type="checkbox" data-toggle="' + c.id + '" ' + (mineChecked ? 'checked' : '') + '>' +
+        '<div class="checklist-body"><span class="text">' + escapeHtml(c.text) + '</span>' + whoHtml + '</div>' +
         '<button class="icon-btn" data-del-check="' + c.id + '" aria-label="ลบ">&times;</button>' +
       '</div>';
     }).join('') : '<div class="mini-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="4" width="14" height="17" rx="2"/><rect x="9" y="2.5" width="6" height="3" rx="1"/><path d="M8.5 12l2 2 4-4.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>ยังไม่มีของที่ต้องเตรียม</span></div>';
 
     content.innerHTML =
-      (trip.checklist.length ? '<p class="eyebrow" style="margin-bottom:12px;">เตรียมแล้ว ' + doneCount + ' / ' + trip.checklist.length + '</p>' : '') +
+      (trip.checklist.length ? '<p class="eyebrow" style="margin-bottom:12px;">คุณเตรียมแล้ว ' + doneCount + ' / ' + trip.checklist.length + '</p>' : '') +
       '<div>' + rowsHtml + '</div>' +
-      '<div class="add-inline-row">' +
+      '<button class="btn btn-ghost" id="fill-essentials-btn" style="margin-top:14px;">✦ เติมของที่จำเป็นให้อัตโนมัติ</button>' +
+      '<div class="add-inline-row" style="margin-top:14px;">' +
         '<input id="check-text" type="text" placeholder="เช่น จองที่พัก, เตรียมยา">' +
         '<button class="btn btn-primary" id="add-check-btn">+ เพิ่ม</button>' +
       '</div>' +
       '<div class="field-error" id="check-err"></div>';
 
+    document.getElementById('fill-essentials-btn').addEventListener('click', function(){
+      var group = detectFlag(trip.destination).group;
+      var suggested = CHECKLIST_BASE_ITEMS.concat(group === 'intl' ? CHECKLIST_INTL_ITEMS : CHECKLIST_TH_ITEMS);
+      var existing = trip.checklist.map(function(c){ return c.text.toLowerCase(); });
+      var added = 0;
+      suggested.forEach(function(text){
+        if(existing.indexOf(text.toLowerCase()) === -1){
+          trip.checklist.push({ id: uid('chk'), text: text, doneBy: [] });
+          added++;
+        }
+      });
+      if(added === 0){
+        showPopup('มีของที่จำเป็นครบอยู่แล้วในลิสต์ ไม่มีรายการใหม่ให้เพิ่ม');
+        return;
+      }
+      apiUpsertTrip(trip).then(reloadTripsSilently).then(function(){ renderChecklist(findTrip(trip.id) || trip); });
+    });
+
     content.querySelectorAll('[data-toggle]').forEach(function(box){
       box.addEventListener('change', function(){
         var cid = box.getAttribute('data-toggle');
         var c = trip.checklist.find(function(x){ return x.id === cid; });
-        if(c) c.done = box.checked;
-        apiUpsertTrip(trip).then(function(){ renderChecklist(trip); });
+        if(c){
+          var idx = c.doneBy.indexOf(state.user);
+          if(box.checked && idx === -1) c.doneBy.push(state.user);
+          if(!box.checked && idx !== -1) c.doneBy.splice(idx, 1);
+        }
+        apiUpsertTrip(trip).then(reloadTripsSilently).then(function(){ renderChecklist(findTrip(trip.id) || trip); });
       });
     });
     content.querySelectorAll('[data-del-check]').forEach(function(btn){
       btn.addEventListener('click', function(){
         var cid = btn.getAttribute('data-del-check');
         trip.checklist = trip.checklist.filter(function(c){ return c.id !== cid; });
-        apiUpsertTrip(trip).then(function(){ renderChecklist(trip); });
+        apiUpsertTrip(trip).then(reloadTripsSilently).then(function(){ renderChecklist(findTrip(trip.id) || trip); });
       });
     });
     document.getElementById('add-check-btn').addEventListener('click', function(){
@@ -1988,9 +2096,9 @@
         return;
       }
       document.getElementById('check-err').textContent = '';
-      trip.checklist.push({ id: uid('chk'), text: text, done: false });
+      trip.checklist.push({ id: uid('chk'), text: text, doneBy: [] });
       textEl.value = '';
-      apiUpsertTrip(trip).then(function(){ renderChecklist(trip); });
+      apiUpsertTrip(trip).then(reloadTripsSilently).then(function(){ renderChecklist(findTrip(trip.id) || trip); });
     });
   }
 
@@ -2069,45 +2177,64 @@
         var did = btn.getAttribute('data-toggle-debt');
         var d = debts.find(function(x){ return x.id === did; });
         if(d) d.settled = !d.settled;
-        apiUpsertTrip(trip).then(function(){ renderDebts(trip); });
+        apiUpsertTrip(trip).then(reloadTripsSilently).then(function(){ renderDebts(findTrip(trip.id) || trip); });
       });
     });
     content.querySelectorAll('[data-del-debt]').forEach(function(btn){
       btn.addEventListener('click', function(){
         var did = btn.getAttribute('data-del-debt');
         trip.debts = debts.filter(function(d){ return d.id !== did; });
-        apiUpsertTrip(trip).then(function(){ renderDebts(trip); });
+        apiUpsertTrip(trip).then(reloadTripsSilently).then(function(){ renderDebts(findTrip(trip.id) || trip); });
       });
     });
     document.getElementById('add-debt-btn').addEventListener('click', function(){
       var lenderSel = document.getElementById('d-lender');
       var amountEl = document.getElementById('d-amount');
       var errEl = document.getElementById('d-err');
-      var lender = lenderSel.value === '__custom__' ? document.getElementById('d-lender-custom').value.trim() : lenderSel.value;
+      var lender = (lenderSel.value === '__custom__' ? document.getElementById('d-lender-custom').value : lenderSel.value).trim();
 
-      var borrowers = [];
+      var selected = [];
       content.querySelectorAll('.d-borrower-check:checked').forEach(function(cb){
-        if(borrowers.indexOf(cb.value) === -1) borrowers.push(cb.value);
+        var v = cb.value.trim();
+        if(v && selected.indexOf(v) === -1) selected.push(v);
       });
       document.getElementById('d-borrower-extra').value.split(',').forEach(function(name){
         name = name.trim();
-        if(name && borrowers.indexOf(name) === -1) borrowers.push(name);
+        if(name && selected.indexOf(name) === -1) selected.push(name);
       });
-      borrowers = borrowers.filter(function(b){ return b.toLowerCase() !== (lender || '').toLowerCase(); });
 
+      var divisorCount = selected.length;
+      var owingBorrowers = selected.filter(function(b){ return b.toLowerCase() !== lender.toLowerCase(); });
       var amount = amountEl.value;
-      if(!lender || borrowers.length === 0 || !amount || isNaN(Number(amount)) || Number(amount) <= 0){
-        errEl.textContent = 'กรุณาเลือกคนที่เป็นหนี้อย่างน้อย 1 คน เลือกคนให้ยืม และใส่ยอดรวมให้ถูกต้อง';
+
+      errEl.textContent = '';
+      if(!lender){
+        errEl.textContent = 'กรุณาเลือกหรือพิมพ์ชื่อ "คนให้ยืม"';
+        showPopup('กรุณาเลือกหรือพิมพ์ชื่อ "คนให้ยืม" ก่อน', { danger: true });
         return;
       }
-      errEl.textContent = '';
+      if(divisorCount === 0){
+        errEl.textContent = 'กรุณาติ๊กเลือกอย่างน้อย 1 คนในช่อง "คนที่เป็นหนี้"';
+        showPopup('กรุณาติ๊กเลือกอย่างน้อย 1 คนในช่อง "คนที่เป็นหนี้"', { danger: true });
+        return;
+      }
+      if(owingBorrowers.length === 0){
+        errEl.textContent = 'คนที่ติ๊กเลือกไว้เป็น "คนให้ยืม" คนเดียวกันหมด ต้องมีอีกอย่างน้อย 1 คนที่ไม่ใช่คนให้ยืม';
+        showPopup('คนที่ติ๊กเลือกไว้ตรงกับ "คนให้ยืม" ทั้งหมด — ต้องเลือกอีกอย่างน้อย 1 คนที่ไม่ใช่คนให้ยืม', { danger: true });
+        return;
+      }
+      if(!amount || isNaN(Number(amount)) || Number(amount) <= 0){
+        errEl.textContent = 'กรุณาใส่ยอดรวมค่าใช้จ่ายเป็นตัวเลขที่มากกว่า 0';
+        showPopup('กรุณาใส่ยอดรวมค่าใช้จ่ายเป็นตัวเลขที่มากกว่า 0', { danger: true });
+        return;
+      }
 
-      var perPerson = Math.round((Number(amount) / borrowers.length) * 100) / 100;
+      var perPerson = Math.round((Number(amount) / divisorCount) * 100) / 100;
       var baseNote = document.getElementById('d-note').value.trim();
-      var splitNote = borrowers.length > 1 ? 'หารเท่ากัน ' + borrowers.length + ' คน จากยอดรวม ฿' + money(amount) : '';
+      var splitNote = divisorCount > 1 ? 'หารเท่ากัน ' + divisorCount + ' คน (รวม' + (selected.indexOf(lender) !== -1 ? 'ตัวเอง' : 'ผู้จ่าย') + ') จากยอดรวม ฿' + money(amount) : '';
       var note = [baseNote, splitNote].filter(Boolean).join(' — ');
 
-      var newDebts = borrowers.map(function(b){
+      var newDebts = owingBorrowers.map(function(b){
         return {
           id: uid('debt'),
           borrower: b,
@@ -2118,7 +2245,7 @@
         };
       });
       trip.debts = debts.concat(newDebts);
-      apiUpsertTrip(trip).then(function(){ renderDebts(trip); });
+      apiUpsertTrip(trip).then(reloadTripsSilently).then(function(){ renderDebts(findTrip(trip.id) || trip); });
     });
   }
 
