@@ -998,9 +998,16 @@
         (isOwner ? '<span class="participant-owner-tag">เจ้าของทริป</span>' : '') +
       '</div>';
     }).join('');
+    var debugHtml = '<div style="margin-top:10px; padding:10px 12px; background:#fff3cd; border:1px dashed #c99a3c; border-radius:8px; font-family:monospace; font-size:11.5px; color:#5a4a1a; word-break:break-all;">' +
+      'DEBUG — trip.id: ' + escapeHtml(trip.id) + '<br>' +
+      'DEBUG — trip.owner: "' + escapeHtml(trip.owner || '') + '"<br>' +
+      'DEBUG — state.user (คุณตอนนี้): "' + escapeHtml(state.user || '') + '"<br>' +
+      'DEBUG — trip.participants (raw): ' + escapeHtml(JSON.stringify(trip.participants)) +
+    '</div>';
     return '<div class="participants-section">' +
       '<h3 class="participants-heading">ผู้ร่วมทริป <span class="trip-section-count">' + people.length + '</span></h3>' +
       '<div class="participants-list">' + cardsHtml + '</div>' +
+      debugHtml +
     '</div>';
   }
 
