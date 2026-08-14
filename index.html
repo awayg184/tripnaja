@@ -237,6 +237,7 @@
     display: flex;
     gap: 4px;
     background: rgba(75,68,96,0.06);
+    border: 1px solid var(--line-soft);
     padding: 4px;
     border-radius: 999px;
     width: fit-content;
@@ -256,10 +257,27 @@
   .tab-btn:not(.active):hover{ color: var(--ink); transform: translateY(-1px); }
 
   /* ---------- trip cards ---------- */
+  .trip-section-heading{
+    display: flex; align-items: center; gap: 10px;
+    font-size: 16px; margin: 24px 0 14px;
+    position: relative; padding-bottom: 10px;
+  }
+  .trip-section-heading::after{
+    content: ""; position: absolute; left: 0; bottom: 0;
+    width: 46px; height: 3px; border-radius: 999px;
+    background: linear-gradient(90deg, var(--coral-dark), var(--plum));
+  }
+  .trip-section-heading:first-child{ margin-top: 0; }
+  .trip-section-count{
+    font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500;
+    color: var(--ink-soft); background: rgba(54,45,76,0.06);
+    border-radius: 999px; padding: 2px 10px;
+  }
   .trip-grid{
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 18px;
+    margin-bottom: 8px;
   }
   .trip-card{
     background: var(--paper-raised);
@@ -308,15 +326,32 @@
   .trip-card .stamp b{ font-size: 14px; }
   .trip-card .stamp span{ font-size: 7.5px; letter-spacing: 0.05em; }
   .trip-card .dest{
+    display: inline-flex; align-items: center; gap: 5px;
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px;
+    font-size: 10.5px;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.06em;
     color: #fff;
+    background: rgba(0,0,0,0.16);
+    border: 1px solid rgba(255,255,255,0.25);
+    padding: 4px 10px 4px 8px;
+    border-radius: 999px;
     position: relative;
     z-index: 1;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.15);
   }
+  .dest-pin{ width: 10px; height: 10px; flex-shrink: 0; opacity: 0.9; }
+  .dest-flag{ font-size: 12px; line-height: 1; }
+  .maps-link{
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 16px; height: 16px; margin-left: 4px; flex-shrink: 0;
+    color: inherit; opacity: 0.75;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    vertical-align: middle;
+  }
+  .maps-link svg{ width: 12px; height: 12px; }
+  .maps-link:hover{ opacity: 1; transform: scale(1.15); }
+  .maps-link-inline{ color: var(--coral-dark); opacity: 0.6; }
+  .maps-link-inline:hover{ opacity: 1; }
   .trip-card h3{ font-size: 19px; margin: 8px 0; max-width: 100%; }
   .trip-card .dates{ font-size: 13px; color: var(--ink-soft); margin-bottom: 10px; }
   .trip-card .owner-tag{
@@ -332,6 +367,11 @@
   .empty-state svg{ width: 120px; height: 84px; margin-bottom: 10px; }
   .empty-state h3{ color: var(--ink); margin-bottom: 8px; font-size: 20px; }
   .empty-state p{ margin: 0 0 20px; font-size: 14px; }
+  .mini-empty{
+    display: flex; align-items: center; gap: 12px;
+    padding: 18px 4px; color: var(--ink-soft); font-size: 14px;
+  }
+  .mini-empty svg{ width: 28px; height: 28px; flex-shrink: 0; color: var(--line); }
   .fab-row{ margin-bottom: 22px; }
 
   .dashboard-hero{
@@ -404,6 +444,12 @@
     margin-bottom: 6px;
   }
   .field-error{ color: var(--danger); font-size: 12.5px; margin-top: 4px; }
+  .input-icon-wrap{ position: relative; }
+  .input-icon-wrap .input-icon{
+    position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+    width: 17px; height: 17px; color: var(--coral-dark); pointer-events: none;
+  }
+  .input-icon-wrap input{ padding-left: 36px; }
   .radio-row{ display: flex; gap: 10px; }
   .radio-card{
     flex: 1;
@@ -417,6 +463,21 @@
   .radio-card.selected{ border-color: var(--coral-dark); background: rgba(201,107,135,0.08); }
   .row2{ display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .modal-actions{ display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+
+  .popup-backdrop{ animation: viewFadeIn 0.2s ease both; }
+  .popup-modal{
+    text-align: center;
+    animation: fadeSlideUp 0.3s cubic-bezier(.2,.8,.3,1.2) both;
+  }
+  .popup-icon{
+    width: 52px; height: 52px; margin: 0 auto 16px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(51,115,103,0.12); color: var(--teal-dark);
+  }
+  .popup-icon svg{ width: 26px; height: 26px; }
+  .popup-danger .popup-icon{ background: rgba(184,79,79,0.12); color: var(--danger); }
+  .popup-message{ font-size: 15px; line-height: 1.6; color: var(--ink); margin: 0; }
 
   /* ---------- trip detail ---------- */
   .detail-header{ margin-bottom: 18px; }
@@ -450,10 +511,15 @@
   .detail-hero-stamp span{ font-size:8px; letter-spacing:0.05em; }
   .detail-hero-content{ position:relative; z-index:1; max-width:78%; }
   .detail-hero-content .dest{
-    font-family:'IBM Plex Mono', monospace; font-size:12px; text-transform:uppercase;
-    letter-spacing:0.08em; color:rgba(255,255,255,0.85);
+    display: inline-flex; align-items: center; gap: 5px;
+    font-family:'IBM Plex Mono', monospace; font-size:11.5px; text-transform:uppercase;
+    letter-spacing:0.06em; color:#fff;
+    background: rgba(0,0,0,0.16); border: 1px solid rgba(255,255,255,0.28);
+    padding: 5px 12px 5px 9px; border-radius: 999px;
   }
-  .detail-hero-content h1{ font-size:28px; margin:6px 0 8px; color:#fff; }
+  .detail-hero-content .dest .dest-pin{ width: 11px; height: 11px; }
+  .detail-hero-content .dest .dest-flag{ font-size: 13px; }
+  .detail-hero-content h1{ font-size:28px; margin:10px 0 8px; color:#fff; }
   .detail-hero-content .meta-row{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; font-size:13px; color:rgba(255,255,255,0.9); }
 
   .visibility-pill{
@@ -474,17 +540,27 @@
     padding: 4px 12px; border-radius: 999px;
   }
 
-  .subtabs{ display:flex; gap: 6px; border-bottom: 1px solid var(--line-soft); margin: 22px 0 20px; flex-wrap: wrap; }
+  .subtabs{ display:flex; gap: 4px; margin: 22px 0 0; flex-wrap: wrap; position: relative; z-index: 1; }
   .subtab-btn{
     display: inline-flex; align-items: center; gap: 6px;
-    background: none; border: none; padding: 10px 4px;
+    background: rgba(54,45,76,0.045); border: 1px solid var(--line-soft); border-bottom: none;
+    padding: 10px 16px;
     font-size: 14.5px; font-weight: 600; color: var(--ink-soft);
-    border-bottom: 2px solid transparent; margin-right: 18px;
-    transition: color 0.2s ease, border-color 0.25s cubic-bezier(.2,.9,.25,1);
+    border-radius: 10px 10px 0 0; margin-right: 0; margin-bottom: -1px;
+    transition: color 0.2s ease, background 0.2s ease;
   }
+  .subtab-btn:hover{ background: rgba(54,45,76,0.09); }
   .subtab-btn svg{ width: 15px; height: 15px; flex-shrink: 0; transition: transform 0.2s ease; }
   .subtab-btn:hover svg{ transform: scale(1.15); }
-  .subtab-btn.active{ color: var(--ink); border-bottom-color: var(--coral-dark); }
+  .subtab-btn.active{ color: var(--ink); background: var(--paper-raised); border-color: var(--line-soft); }
+  .subtab-panel{
+    background: var(--paper-raised); border: 1px solid var(--line-soft);
+    border-radius: 0 12px 12px 12px; padding: 22px; position: relative; z-index: 0;
+    margin-bottom: 20px;
+  }
+  @media (max-width: 520px){
+    .subtab-panel{ padding: 18px 16px; border-radius: 12px; }
+  }
 
   .day-tabs{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom: 16px; }
   .day-tab{
@@ -501,8 +577,19 @@
   }
   .leg-hint{ font-size: 12px; color: var(--ink-soft); font-style: italic; }
   .leg-hint.loading{ animation: softPulse 1.3s ease-in-out infinite; }
-  .leg-mode{ font-size: 12px; color: var(--teal-dark); font-family: 'IBM Plex Mono', monospace; }
-  .leg-sep{ color: var(--line); }
+  .leg-pill{
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 5px 12px 5px 10px; border-radius: 999px;
+    font-size: 12.5px; font-weight: 600;
+    transition: transform 0.15s ease;
+  }
+  .leg-pill:hover{ transform: translateY(-1px); }
+  .leg-pill svg{ width: 14px; height: 14px; flex-shrink: 0; }
+  .leg-pill b{ font-weight: 700; }
+  .leg-pill-dist{ font-weight: 500; opacity: 0.75; font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; }
+  .leg-pill.walk{ background: rgba(51,115,103,0.13); color: var(--teal-dark); }
+  .leg-pill.drive{ background: rgba(150,57,90,0.13); color: var(--coral-dark); }
+  .leg-pill.unavailable{ background: rgba(103,93,128,0.07); color: var(--ink-soft); font-weight: 500; font-style: italic; }
   .stop-card{
     background: #fff; border: 1px solid var(--line-soft); border-radius: 12px;
     padding: 12px 14px; display: flex; gap: 12px; align-items: flex-start;
@@ -512,7 +599,7 @@
     min-width: 48px; padding-top: 2px; flex-shrink: 0;
   }
   .stop-body{ flex: 1; }
-  .stop-body .name{ font-weight: 600; font-size: 14.5px; }
+  .stop-body .name{ font-weight: 600; font-size: 14.5px; display: inline-flex; align-items: center; }
   .stop-body .note{ font-size: 13px; color: var(--ink-soft); margin-top: 2px; }
   .icon-btn{
     border: none; background: none; color: var(--ink-soft); padding: 4px;
@@ -603,7 +690,9 @@
   }
   .badge-art svg{ position:absolute; right:-10px; bottom:-10px; width:80px; height:80px; opacity:0.9; }
   .badge-title{ font-weight: 600; font-size: 13.5px; padding: 10px 12px 2px; }
-  .badge-dest{ font-size: 11.5px; color: var(--ink-soft); padding: 0 12px 12px; }
+  .badge-dest{ display: flex; align-items: center; gap: 4px; font-size: 11.5px; color: var(--ink-soft); padding: 0 12px 12px; }
+  .badge-dest .dest-pin{ width: 9px; height: 9px; color: var(--coral-dark); }
+  .badge-dest .dest-flag{ font-size: 12px; }
 
   .debt-summary-cols{
     display: grid;
@@ -690,7 +779,7 @@
       <div class="fab-row">
         <button class="btn btn-primary" id="new-trip-btn">+ สร้างทริปใหม่</button>
       </div>
-      <div id="trip-grid" class="trip-grid"></div>
+      <div id="trip-grid"></div>
     </div>
 
     <div id="detail-view" class="hide"></div>
@@ -779,6 +868,79 @@
     return 'compass';
   }
 
+  var TH_KEYWORDS = ['ไทย','thailand','กรุงเทพ','กทม','bangkok','เชียงใหม่','chiang mai','เชียงราย','chiang rai',
+    'ปาย','pai','ภูเก็ต','phuket','สมุย','samui','กระบี่','krabi','พังงา','phangnga','พะงัน','phangan',
+    'เกาะเต่า','koh tao','หัวหิน','hua hin','พัทยา','pattaya','ระยอง','rayong','ตราด','trat','เกาะช้าง','koh chang',
+    'นครราชสีมา','โคราช','korat','ขอนแก่น','khon kaen','อุดรธานี','udon thani','อุบลราชธานี','ubon',
+    'สุรินทร์','บุรีรัมย์','buriram','เลย','loei','น่าน','nan','แม่ฮ่องสอน','mae hong son','ลำปาง','lampang',
+    'ลำพูน','lamphun','พิษณุโลก','phitsanulok','สุโขทัย','sukhothai','กาญจนบุรี','kanchanaburi',
+    'เพชรบุรี','phetchaburi','ประจวบ','prachuap','ชุมพร','chumphon','สุราษฎร์ธานี','surat thani',
+    'นครศรีธรรมราช','nakhon si thammarat','ตรัง','trang','สตูล','satun','สงขลา','songkhla','หาดใหญ่','hat yai',
+    'ยะลา','ปัตตานี','นราธิวาส','อยุธยา','ayutthaya','นนทบุรี','nonthaburi','ปทุมธานี','pathum thani',
+    'สมุทรปราการ','samut prakan','ฉะเชิงเทรา','chachoengsao','ชลบุรี','chonburi'];
+
+  var COUNTRY_FLAGS = [
+    { flag:'🇯🇵', keywords:['japan','ญี่ปุ่น','tokyo','โตเกียว','osaka','โอซาก้า','kyoto','เกียวโต'] },
+    { flag:'🇰🇷', keywords:['korea','เกาหลี','seoul','โซล','busan','ปูซาน'] },
+    { flag:'🇸🇬', keywords:['singapore','สิงคโปร์'] },
+    { flag:'🇲🇾', keywords:['malaysia','มาเลเซีย','kuala lumpur','กัวลาลัมเปอร์','penang','ปีนัง'] },
+    { flag:'🇻🇳', keywords:['vietnam','เวียดนาม','hanoi','ฮานอย','danang','ดานัง','ho chi minh'] },
+    { flag:'🇱🇦', keywords:['laos','ลาว','vientiane','เวียงจันทน์','luang prabang','หลวงพระบาง'] },
+    { flag:'🇰🇭', keywords:['cambodia','กัมพูชา','siem reap','เสียมเรียบ','phnom penh'] },
+    { flag:'🇲🇲', keywords:['myanmar','พม่า','yangon','ย่างกุ้ง'] },
+    { flag:'🇨🇳', keywords:['china','จีน','shanghai','เซี่ยงไฮ้','beijing','ปักกิ่ง','guangzhou'] },
+    { flag:'🇹🇼', keywords:['taiwan','ไต้หวัน','taipei','ไทเป'] },
+    { flag:'🇭🇰', keywords:['hong kong','ฮ่องกง'] },
+    { flag:'🇮🇩', keywords:['indonesia','อินโดนีเซีย','bali','บาหลี','jakarta','จาการ์ตา'] },
+    { flag:'🇵🇭', keywords:['philippines','ฟิลิปปินส์','manila','มะนิลา','cebu','เซบู'] },
+    { flag:'🇮🇳', keywords:['india','อินเดีย','delhi','เดลี','mumbai','มุมไบ'] },
+    { flag:'🇺🇸', keywords:['usa','america','สหรัฐ','อเมริกา','new york','นิวยอร์ก','los angeles'] },
+    { flag:'🇬🇧', keywords:['uk','england','อังกฤษ','london','ลอนดอน'] },
+    { flag:'🇫🇷', keywords:['france','ฝรั่งเศส','paris','ปารีส'] },
+    { flag:'🇮🇹', keywords:['italy','อิตาลี','rome','โรม','milan','มิลาน'] },
+    { flag:'🇩🇪', keywords:['germany','เยอรมัน','berlin','เบอร์ลิน'] },
+    { flag:'🇨🇭', keywords:['switzerland','สวิส','zurich','ซูริค'] },
+    { flag:'🇪🇸', keywords:['spain','สเปน','barcelona','บาร์เซโลนา','madrid'] },
+    { flag:'🇦🇺', keywords:['australia','ออสเตรเลีย','sydney','ซิดนีย์','melbourne'] },
+    { flag:'🇳🇿', keywords:['new zealand','นิวซีแลนด์','auckland'] },
+    { flag:'🇦🇪', keywords:['dubai','ดูไบ','uae','สหรัฐอาหรับ'] },
+    { flag:'🇹🇷', keywords:['turkey','ตุรกี','istanbul','อิสตันบูล'] },
+    { flag:'🇳🇱', keywords:['netherlands','เนเธอร์แลนด์','amsterdam','อัมสเตอร์ดัม'] }
+  ];
+
+  function detectFlag(destination){
+    var text = (destination || '').toLowerCase().trim();
+    if(!text) return { flag: '', group: 'unspecified' };
+    if(TH_KEYWORDS.some(function(k){ return text.indexOf(k) !== -1; })){
+      return { flag: '🇹🇭', group: 'th' };
+    }
+    for(var i = 0; i < COUNTRY_FLAGS.length; i++){
+      if(COUNTRY_FLAGS[i].keywords.some(function(k){ return text.indexOf(k) !== -1; })){
+        return { flag: COUNTRY_FLAGS[i].flag, group: 'intl' };
+      }
+    }
+    return { flag: '🌍', group: 'intl' };
+  }
+
+  var PIN_ICON_SMALL = '<svg class="dest-pin" viewBox="0 0 20 20"><path d="M10 2C6.7 2 4 4.7 4 8c0 4.5 6 10 6 10s6-5.5 6-10c0-3.3-2.7-6-6-6z" fill="currentColor"/></svg>';
+  var EXTERNAL_ICON = '<svg viewBox="0 0 16 16"><path d="M6 3H3.5A1.5 1.5 0 002 4.5v8A1.5 1.5 0 003.5 14h8a1.5 1.5 0 001.5-1.5V10M9 2h5v5M13.5 2.5L7 9" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+  function mapsSearchUrl(query){
+    return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(query);
+  }
+
+  function mapsLinkHtml(query, extraClass){
+    return '<a class="maps-link' + (extraClass ? ' ' + extraClass : '') + '" href="' + mapsSearchUrl(query) + '" target="_blank" rel="noopener" onclick="event.stopPropagation()" aria-label="เปิดใน Google Maps" title="เปิดใน Google Maps">' + EXTERNAL_ICON + '</a>';
+  }
+
+  function destLabelHtml(trip){
+    var destText = trip.destination || 'จุดหมายลับ';
+    var info = detectFlag(trip.destination);
+    var label = PIN_ICON_SMALL + (info.flag ? '<span class="dest-flag">' + info.flag + '</span>' : '') + escapeHtml(destText);
+    if(trip.destination) label += mapsLinkHtml(trip.destination);
+    return label;
+  }
+
   var ICONS = {
     beach: '<svg viewBox="0 0 100 100"><circle cx="70" cy="26" r="13" fill="currentColor" opacity="0.95"/>' +
       '<path d="M-5 55 Q15 42 35 55 T75 55 T115 55" stroke="currentColor" stroke-width="5" fill="none" opacity="0.85" stroke-linecap="round"/>' +
@@ -804,7 +966,7 @@
     var icon = ICONS[pickIconName(trip)];
     return '<div class="trip-card-art" style="background: linear-gradient(135deg, ' + pal.a + ', ' + pal.b + '); color: rgba(255,255,255,0.55);">' +
       icon +
-      '<div class="dest">' + escapeHtml(trip.destination || 'จุดหมายลับ') + '</div>' +
+      '<div class="dest">' + destLabelHtml(trip) + '</div>' +
       '</div>';
   }
 
@@ -914,6 +1076,29 @@
     }).catch(function(){ return null; });
   }
 
+  var LEG_MODE_META = {
+    walk: {
+      label: 'เดินเท้า',
+      unavailableLabel: 'ไม่มีเส้นทางเดินเท้า',
+      icon: '<svg viewBox="0 0 16 16"><circle cx="9.2" cy="2.8" r="1.5" fill="currentColor"/><path d="M9.2 4.6 L7.2 8.6 L4.2 10.8 M9.2 4.6 L11.4 7.6 L13.4 6.6 M7.2 8.6 L9.4 11.6 L8.4 14.8 M7.2 8.6 L5 14.8" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+    },
+    drive: {
+      label: 'ขับรถ',
+      unavailableLabel: 'ไม่มีเส้นทางขับรถ',
+      icon: '<svg viewBox="0 0 16 16"><path d="M2 9.5 L3 6.3 Q3.5 5.2 5 5.2 H11 Q12.5 5.2 13 6.3 L14 9.5" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linejoin="round" stroke-linecap="round"/><rect x="1.3" y="9.3" width="13.4" height="3.2" rx="1.3" fill="currentColor" opacity="0.16" stroke="currentColor" stroke-width="1.2"/><circle cx="4.4" cy="12.7" r="1.3" fill="currentColor"/><circle cx="11.6" cy="12.7" r="1.3" fill="currentColor"/></svg>'
+    }
+  };
+
+  function legPillHtml(mode, data){
+    var meta = LEG_MODE_META[mode];
+    if(!data){
+      return '<span class="leg-pill unavailable">' + meta.icon + meta.unavailableLabel + '</span>';
+    }
+    return '<span class="leg-pill ' + mode + '">' + meta.icon +
+      '<b>' + escapeHtml(data.duration.text) + '</b><span class="leg-pill-dist">' + escapeHtml(data.distance.text) + '</span>' +
+    '</span>';
+  }
+
   /* ---------------- storage (Google Sheets via Apps Script) ---------------- */
 
   var API_URL_KEY = 'trip-planner-api-url';
@@ -946,7 +1131,7 @@
       body: JSON.stringify({ action: 'upsert', trip: trip })
     }).then(function(res){ return res.json(); }).catch(function(err){
       console.error('upsert failed', err);
-      alert('บันทึกไป Google Sheet ไม่สำเร็จ ลองอีกครั้ง');
+      showPopup('บันทึกไป Google Sheet ไม่สำเร็จ ลองอีกครั้ง', { danger: true });
       throw err;
     });
   }
@@ -959,7 +1144,7 @@
       body: JSON.stringify({ action: 'delete', id: id })
     }).then(function(res){ return res.json(); }).catch(function(err){
       console.error('delete failed', err);
-      alert('ลบข้อมูลใน Google Sheet ไม่สำเร็จ ลองอีกครั้ง');
+      showPopup('ลบข้อมูลใน Google Sheet ไม่สำเร็จ ลองอีกครั้ง', { danger: true });
       throw err;
     });
   }
@@ -969,7 +1154,7 @@
       state.trips = trips;
     }).catch(function(){
       state.trips = [];
-      alert('โหลดข้อมูลจาก Google Sheet ไม่สำเร็จ ตรวจสอบลิงก์ Apps Script ในหน้าตั้งค่าอีกครั้ง');
+      showPopup('โหลดข้อมูลจาก Google Sheet ไม่สำเร็จ ตรวจสอบลิงก์ Apps Script ในหน้าตั้งค่าอีกครั้ง', { danger: true });
     });
   }
 
@@ -1115,7 +1300,6 @@
       grid.innerHTML = '';
       var wrap = document.createElement('div');
       wrap.className = 'empty-state';
-      wrap.style.gridColumn = '1 / -1';
       wrap.innerHTML =
         '<svg viewBox="0 0 140 100" style="color:var(--coral-dark);"><rect x="34" y="38" width="72" height="50" rx="8" fill="none" stroke="currentColor" stroke-width="4"/>' +
         '<rect x="56" y="26" width="28" height="14" rx="4" fill="none" stroke="currentColor" stroke-width="4"/>' +
@@ -1128,7 +1312,13 @@
       grid.appendChild(wrap);
       return;
     }
-    grid.innerHTML = trips.map(function(t, idx){
+
+    var groups = { th: [], intl: [], unspecified: [] };
+    trips.forEach(function(t){
+      groups[detectFlag(t.destination).group].push(t);
+    });
+
+    function cardHtml(t, idx){
       var dc = dayCount(t.startDate, t.endDate);
       var dateStr = t.startDate ? (fmtDate(t.startDate) + (t.endDate && t.endDate !== t.startDate ? ' – ' + fmtDate(t.endDate) : '')) : 'ยังไม่กำหนดวัน';
       return '<div class="trip-card" data-id="' + t.id + '" style="--stagger:' + Math.min(idx * 60, 480) + 'ms;">' +
@@ -1140,7 +1330,19 @@
           (state.scope === 'shared' ? '<div class="owner-tag">โดย ' + escapeHtml(t.owner) + '</div>' : '') +
         '</div>' +
         '</div>';
-    }).join('');
+    }
+
+    function sectionHtml(label, list, staggerStart){
+      if(!list.length) return '';
+      return '<h3 class="trip-section-heading">' + label + ' <span class="trip-section-count">' + list.length + '</span></h3>' +
+        '<div class="trip-grid">' + list.map(function(t, i){ return cardHtml(t, staggerStart + i); }).join('') + '</div>';
+    }
+
+    grid.innerHTML =
+      sectionHtml('🇹🇭 ในประเทศไทย', groups.th, 0) +
+      sectionHtml('🌍 ต่างประเทศ', groups.intl, groups.th.length) +
+      sectionHtml('ยังไม่ระบุจุดหมาย', groups.unspecified, groups.th.length + groups.intl.length);
+
     grid.querySelectorAll('.trip-card').forEach(function(card){
       card.addEventListener('click', function(){
         openTripDetail(card.getAttribute('data-id'));
@@ -1193,7 +1395,7 @@
           '<span class="badge-ribbon" style="background:' + pal.b + ';"></span>' +
         '</div>' +
         '<div class="badge-title">' + escapeHtml(t.title) + '</div>' +
-        '<div class="badge-dest">' + escapeHtml(t.destination || '') + '</div>' +
+        '<div class="badge-dest">' + (t.destination ? destLabelHtml(t) : '') + '</div>' +
       '</div>';
     }).join('') : '<p style="color:var(--ink-soft); font-size:14px;">ยังไม่เคยร่วมทริปไหนเลย ไปสร้างหรือเข้าร่วมทริปกันก่อน</p>';
 
@@ -1216,7 +1418,10 @@
         '<div class="sum-badge"><div class="label">รวมจำนวนวัน</div><div class="value">' + totalDays + '</div></div>' +
         '<div class="sum-badge total"><div class="label">จุดหมายที่ไปแล้ว</div><div class="value">' + destinations.length + '</div></div>' +
       '</div>' +
-      '<h3 style="margin: 26px 0 14px; font-size:17px;">ทริปที่เคยร่วม</h3>' +
+      '<div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; margin: 26px 0 14px;">' +
+        '<h3 style="font-size:17px; margin:0;">ทริปที่เคยร่วม</h3>' +
+        '<button class="btn btn-primary" id="add-past-trip-btn">+ เพิ่มทริปที่เคยไปแล้ว</button>' +
+      '</div>' +
       '<div class="badge-grid">' + badgesHtml + '</div>' +
       '<h3 style="margin: 30px 0 6px; font-size:17px;">สรุปหนี้สินรวมทุกทริป</h3>' +
       '<div class="debt-summary-cols">' +
@@ -1225,10 +1430,80 @@
       '</div>';
 
     document.getElementById('ach-back-btn').addEventListener('click', renderDashboard);
+    document.getElementById('add-past-trip-btn').addEventListener('click', openPastTripModal);
     wrap.querySelectorAll('.badge-card').forEach(function(card){
       card.addEventListener('click', function(){
         document.getElementById('achievement-view').classList.add('hide');
         openTripDetail(card.getAttribute('data-id'));
+      });
+    });
+  }
+
+  function openPastTripModal(){
+    var root = document.getElementById('modal-root');
+    root.innerHTML =
+      '<div class="modal-backdrop" id="modal-backdrop">' +
+        '<div class="modal">' +
+          '<h2>เพิ่มทริปที่เคยไปแล้ว</h2>' +
+          '<p style="font-size:13px; color:var(--ink-soft); margin:-10px 0 16px;">สำหรับบันทึกทริปเก่าที่ไม่ได้วางแผนในแอพนี้ จะถูกนับรวมในหน้าความสำเร็จทันที</p>' +
+          '<div class="field">' +
+            '<label>ชื่อทริป</label>' +
+            '<input id="pt-title" type="text" placeholder="เช่น ทริปเชียงใหม่ปีใหม่ 2568">' +
+            '<div class="field-error" id="pt-err-title"></div>' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>จุดหมาย</label>' +
+            '<div class="input-icon-wrap">' +
+              '<svg class="input-icon" viewBox="0 0 20 20"><path d="M10 2C6.7 2 4 4.7 4 8c0 4.5 6 10 6 10s6-5.5 6-10c0-3.3-2.7-6-6-6z" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="10" cy="8" r="2.2" fill="currentColor"/></svg>' +
+              '<input id="pt-dest" type="text" placeholder="เช่น เชียงใหม่, ประเทศไทย">' +
+            '</div>' +
+            '<div id="pt-dest-place-picker" class="place-picker-slot"></div>' +
+          '</div>' +
+          '<div class="field row2">' +
+            '<div><label>วันที่เริ่ม (ถ้าจำได้)</label><input id="pt-start" type="date"></div>' +
+            '<div><label>วันที่สิ้นสุด (ถ้าจำได้)</label><input id="pt-end" type="date"></div>' +
+          '</div>' +
+          '<div class="modal-actions">' +
+            '<button class="btn btn-ghost" id="pt-cancel">ยกเลิก</button>' +
+            '<button class="btn btn-primary" id="pt-save">+ บันทึกทริปนี้</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+
+    mountPlacePicker('pt-dest-place-picker', 'pt-dest');
+
+    document.getElementById('pt-cancel').addEventListener('click', closeModal);
+    document.getElementById('modal-backdrop').addEventListener('click', function(e){
+      if(e.target.id === 'modal-backdrop') closeModal();
+    });
+
+    document.getElementById('pt-save').addEventListener('click', function(){
+      var title = document.getElementById('pt-title').value.trim();
+      var errEl = document.getElementById('pt-err-title');
+      if(!title){
+        errEl.textContent = 'กรุณาตั้งชื่อทริปก่อน';
+        return;
+      }
+      errEl.textContent = '';
+      var trip = {
+        id: uid('trip'),
+        owner: state.user,
+        visibility: 'private',
+        title: title,
+        destination: document.getElementById('pt-dest').value.trim(),
+        startDate: document.getElementById('pt-start').value,
+        endDate: document.getElementById('pt-end').value,
+        days: [],
+        budget: [],
+        checklist: [],
+        participants: [state.user],
+        debts: [],
+        createdAt: Date.now()
+      };
+      state.trips.push(trip);
+      apiUpsertTrip(trip).then(function(){
+        closeModal();
+        renderAchievements();
       });
     });
   }
@@ -1248,7 +1523,10 @@
           '</div>' +
           '<div class="field">' +
             '<label>จุดหมาย</label>' +
-            '<input id="m-dest" type="text" placeholder="เช่น เกาะสมุย, ประเทศไทย">' +
+            '<div class="input-icon-wrap">' +
+              '<svg class="input-icon" viewBox="0 0 20 20"><path d="M10 2C6.7 2 4 4.7 4 8c0 4.5 6 10 6 10s6-5.5 6-10c0-3.3-2.7-6-6-6z" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="10" cy="8" r="2.2" fill="currentColor"/></svg>' +
+              '<input id="m-dest" type="text" placeholder="เช่น เกาะสมุย, ประเทศไทย">' +
+            '</div>' +
             '<div id="dest-place-picker" class="place-picker-slot"></div>' +
           '</div>' +
           '<div class="field row2">' +
@@ -1329,6 +1607,53 @@
     document.getElementById('modal-root').innerHTML = '';
   }
 
+  function showPopup(message, opts){
+    opts = opts || {};
+    var root = document.getElementById('modal-root');
+    root.innerHTML =
+      '<div class="modal-backdrop popup-backdrop" id="popup-backdrop">' +
+        '<div class="modal popup-modal' + (opts.danger ? ' popup-danger' : '') + '">' +
+          '<div class="popup-icon">' + (opts.danger ?
+            '<svg viewBox="0 0 24 24"><path d="M12 8v5M12 16.5v.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/></svg>' :
+            '<svg viewBox="0 0 24 24"><path d="M6 12.5l4 4 8-9" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>') +
+          '</div>' +
+          '<p class="popup-message">' + escapeHtml(message) + '</p>' +
+          '<div class="modal-actions" style="justify-content:center;">' +
+            '<button class="btn btn-primary" id="popup-ok-btn">' + (opts.okLabel || 'เข้าใจแล้ว') + '</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    document.getElementById('popup-ok-btn').addEventListener('click', closeModal);
+    document.getElementById('popup-backdrop').addEventListener('click', function(e){
+      if(e.target.id === 'popup-backdrop') closeModal();
+    });
+  }
+
+  function showConfirmPopup(message, opts){
+    opts = opts || {};
+    return new Promise(function(resolve){
+      var root = document.getElementById('modal-root');
+      root.innerHTML =
+        '<div class="modal-backdrop popup-backdrop" id="popup-backdrop">' +
+          '<div class="modal popup-modal popup-danger">' +
+            '<div class="popup-icon">' +
+              '<svg viewBox="0 0 24 24"><path d="M12 8v5M12 16.5v.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/></svg>' +
+            '</div>' +
+            '<p class="popup-message">' + escapeHtml(message) + '</p>' +
+            '<div class="modal-actions" style="justify-content:center;">' +
+              '<button class="btn btn-ghost" id="popup-cancel-btn">ยกเลิก</button>' +
+              '<button class="btn btn-danger" id="popup-confirm-btn">' + (opts.confirmLabel || 'ยืนยัน') + '</button>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+      document.getElementById('popup-cancel-btn').addEventListener('click', function(){ closeModal(); resolve(false); });
+      document.getElementById('popup-confirm-btn').addEventListener('click', function(){ closeModal(); resolve(true); });
+      document.getElementById('popup-backdrop').addEventListener('click', function(e){
+        if(e.target.id === 'popup-backdrop'){ closeModal(); resolve(false); }
+      });
+    });
+  }
+
   /* ---------------- trip detail ---------------- */
 
   function findTrip(id){
@@ -1379,7 +1704,7 @@
         '<div class="detail-hero-art" style="color: rgba(255,255,255,0.4);">' + icon + '</div>' +
         (dc ? '<div class="detail-hero-stamp"><b>' + dc + '</b><span>วัน</span></div>' : '') +
         '<div class="detail-hero-content">' +
-          '<div class="dest">' + escapeHtml(trip.destination || 'จุดหมายลับ') + '</div>' +
+          '<div class="dest">' + destLabelHtml(trip) + '</div>' +
           '<h1>' + escapeHtml(trip.title) + '</h1>' +
           '<div class="meta-row">' +
             '<span>' + dateStr + '</span>' +
@@ -1398,7 +1723,7 @@
         '<button class="subtab-btn" data-sub="checklist"><svg viewBox="0 0 20 20"><path d="M4 10l4 4 8-9" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>เช็คลิสต์</button>' +
         '<button class="subtab-btn" data-sub="debts"><svg viewBox="0 0 20 20"><path d="M4 6h12M4 10h12M4 14h8" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/><circle cx="16" cy="15" r="2.6" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>หนี้สิน</button>' +
       '</div>' +
-      '<div id="subtab-content"></div>' +
+      '<div id="subtab-content" class="subtab-panel"></div>' +
       '<div style="margin-top:28px;">' +
         (trip.owner === state.user ? '<button class="btn btn-danger" id="delete-trip-btn">ลบทริปนี้</button>' : '') +
       '</div>';
@@ -1422,12 +1747,13 @@
     var delBtn = document.getElementById('delete-trip-btn');
     if(delBtn){
       delBtn.addEventListener('click', function(){
-        if(confirm('ลบทริป "' + trip.title + '" ใช่ไหม? ลบแล้วกู้คืนไม่ได้')){
+        showConfirmPopup('ลบทริป "' + trip.title + '" ใช่ไหม? ลบแล้วกู้คืนไม่ได้', { confirmLabel: 'ลบทริปนี้' }).then(function(confirmed){
+          if(!confirmed) return;
           apiDeleteTrip(trip.id).then(function(){
             state.trips = state.trips.filter(function(t){ return t.id !== trip.id; });
             backToDashboard();
           });
-        }
+        });
       });
     }
 
@@ -1464,7 +1790,7 @@
         stopsHtml +=
           '<div class="stop-card">' +
             '<div class="stop-time">' + escapeHtml(s.time || '--:--') + '</div>' +
-            '<div class="stop-body"><div class="name">' + escapeHtml(s.name) + '</div>' +
+            '<div class="stop-body"><div class="name">' + escapeHtml(s.name) + mapsLinkHtml(s.name, 'maps-link-inline') + '</div>' +
               (s.note ? '<div class="note">' + escapeHtml(s.note) + '</div>' : '') +
             '</div>' +
             '<button class="icon-btn" data-del-stop="' + s.id + '" aria-label="ลบ">&times;</button>' +
@@ -1507,10 +1833,7 @@
             : '<span class="leg-hint">คำนวณระยะทางไม่สำเร็จ ลองตั้งชื่อสถานที่ให้ชัดเจนขึ้น</span>';
           return;
         }
-        var parts = [];
-        if(res.walk) parts.push('<span class="leg-mode">เดินเท้า ' + res.walk.duration.text + ' · ' + res.walk.distance.text + '</span>');
-        if(res.drive) parts.push('<span class="leg-mode">ขับรถ ' + res.drive.duration.text + ' · ' + res.drive.distance.text + '</span>');
-        legEl.innerHTML = parts.join('<span class="leg-sep">•</span>');
+        legEl.innerHTML = legPillHtml('walk', res.walk) + legPillHtml('drive', res.drive);
       });
     });
 
@@ -1567,7 +1890,7 @@
         '<span class="amt">฿' + money(b.amount) + '</span>' +
         '<button class="icon-btn" data-del-budget="' + b.id + '" aria-label="ลบ">&times;</button>' +
       '</div>';
-    }).join('') : '<p style="color:var(--ink-soft); font-size:14px; margin-top:12px;">ยังไม่มีรายการค่าใช้จ่าย</p>';
+    }).join('') : '<div class="mini-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9 9.5c0-1.1 1.2-1.7 3-1.7s3 .6 3 1.6c0 2.2-6 1-6 3.2 0 1 1.2 1.7 3 1.7s3-.6 3-1.7" stroke-linecap="round"/></svg><span>ยังไม่มีรายการค่าใช้จ่าย</span></div>';
 
     content.innerHTML =
       '<div class="budget-summary">' +
@@ -1631,7 +1954,7 @@
         '<span class="text">' + escapeHtml(c.text) + '</span>' +
         '<button class="icon-btn" data-del-check="' + c.id + '" aria-label="ลบ">&times;</button>' +
       '</div>';
-    }).join('') : '<p style="color:var(--ink-soft); font-size:14px; margin-top:12px;">ยังไม่มีของที่ต้องเตรียม</p>';
+    }).join('') : '<div class="mini-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="4" width="14" height="17" rx="2"/><rect x="9" y="2.5" width="6" height="3" rx="1"/><path d="M8.5 12l2 2 4-4.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>ยังไม่มีของที่ต้องเตรียม</span></div>';
 
     content.innerHTML =
       (trip.checklist.length ? '<p class="eyebrow" style="margin-bottom:12px;">เตรียมแล้ว ' + doneCount + ' / ' + trip.checklist.length + '</p>' : '') +
@@ -1691,7 +2014,7 @@
         '<button class="btn btn-ghost debt-settle-btn" data-toggle-debt="' + d.id + '">' + (d.settled ? 'จ่ายแล้ว' : 'ยังไม่จ่าย') + '</button>' +
         '<button class="icon-btn" data-del-debt="' + d.id + '" aria-label="ลบ">&times;</button>' +
       '</div>';
-    }).join('') : '<p style="color:var(--ink-soft); font-size:14px; margin-top:12px;">ยังไม่มีรายการค้างเงินในทริปนี้</p>';
+    }).join('') : '<div class="mini-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 8h13M13 4l4 4-4 4" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 16H7M11 12l-4 4 4 4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>ยังไม่มีรายการค้างเงินในทริปนี้</span></div>';
 
     var people = (trip.participants && trip.participants.length) ? trip.participants.slice() : [state.user];
     if(people.indexOf(state.user) === -1) people.unshift(state.user);
