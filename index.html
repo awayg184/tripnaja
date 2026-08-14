@@ -1215,8 +1215,9 @@
   function reloadTripsSilently(){
     return apiListTrips().then(function(trips){
       state.trips = trips;
-    }).catch(function(){
-      /* silent — keep last known state.trips if a background reload fails */
+      console.log('reloadTripsSilently: loaded', trips.length, 'trips from server');
+    }).catch(function(err){
+      console.error('reloadTripsSilently: FAILED — using stale local data', err);
     });
   }
 
@@ -1790,6 +1791,7 @@
     reloadTripsSilently().then(function(){
       var trip = findTrip(id);
       if(!trip) return renderDashboard();
+      console.log('openTripDetail: trip', trip.id, 'participants BEFORE fix =', JSON.stringify(trip.participants), 'owner =', trip.owner, 'me =', state.user);
       if(trip.days.length === 0){
         trip.days.push({ id: uid('day'), label: 'วันที่ 1', stops: [] });
       }
@@ -1809,9 +1811,12 @@
         trip.participants.push(state.user);
         needsSave = true;
       }
+      console.log('openTripDetail: trip', trip.id, 'participants AFTER fix =', JSON.stringify(trip.participants), 'needsSave =', needsSave);
 
       if(needsSave){
         apiUpsertTrip(trip).then(reloadTripsSilently).then(function(){
+          var freshCheck = findTrip(id);
+          console.log('openTripDetail: after save+reload, participants =', JSON.stringify(freshCheck && freshCheck.participants));
           renderTripDetail();
         });
         return;
